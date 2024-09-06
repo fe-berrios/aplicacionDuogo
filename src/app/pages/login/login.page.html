@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Inicia sesión en Duogo!</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Se declara la carta -->
+  <ion-card>
+    <!-- Se declara el header -->
+    <ion-card-header>
+      <!-- Se declara el contenido-->
+      <ion-card-content>
+        <ion-input type="email" label="Correo" labelPlacement="stacked" fill="outline"></ion-input>
+        <br>
+        <ion-input type="password" label="Contraseña" labelPlacement="stacked" fill="outline"></ion-input>
+        <br>
+        <ion-button id="present-alert" type="submit" size="block" color="success">
+          Iniciar sesión
+        </ion-button>
+      </ion-card-content>
+    </ion-card-header>
+  </ion-card>
+</ion-content>

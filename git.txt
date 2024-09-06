@@ -1,0 +1,13 @@
+# Git
+// Configuración usuario
+git config --global user.name "fe-berrios"
+git config --global user.email "fe.berrios.ov@gmail.com"
+
+// Clonar proyecto
+git clone 'url'
+npm install
+code .
+
+// Empezar nueva 'branch'
+git branch nombre
+git switch nombre

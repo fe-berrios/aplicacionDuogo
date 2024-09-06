@@ -1,0 +1,7 @@
+# Ionic
+// Creación de app
+ionic start nombre blank --type angular ()?
+
+//
+ionic g page pages/nombre
+ionic g service services/nombre

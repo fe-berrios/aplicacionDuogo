@@ -1,0 +1,38 @@
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar color="warning">
+      <ion-title>Ajustes</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list lines="none">
+      <ion-item>
+        <a routerLink="/login" style="text-decoration: none; color: inherit">Iniciar sesión</a>
+      </ion-item>
+      <ion-item>
+        <a routerLink="/registro" style="text-decoration: none; color: inherit">Registrarse</a>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<div class="ion-page" id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title>Duogo</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">Gracias por utilizar Duogo!</ion-content>
+
+  <ion-tabs>
+    <ion-tab-bar slot="bottom">
+      <ion-tab-button>
+        <ion-icon name="calendar-outline"></ion-icon>
+        Reserva
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
+</div>
