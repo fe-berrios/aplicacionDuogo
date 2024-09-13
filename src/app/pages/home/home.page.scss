@@ -1,39 +1,33 @@
-#container {
-  text-align: center;
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+.imagen{
+  overflow: hidden; 
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.imagen {
+  max-width: 100%;                             
+  opacity: 0;    
+  height: 100%;               
+  transform: translateY(20px); 
+  animation: aparecer 3s forwards; 
+  
 }
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+@keyframes aparecer {
+  to {
+    opacity: 1;                
+    transform: translateY(0);  
+  }
 }
-
-#container a {
-  text-decoration: none;
+.icono-cargando {
+  font-size: 30px; /* Tamaño del icono */
+  animation: spin 1s linear infinite; /* Animación de giro */
+  margin-top: 50px; /* Sin margen inferior para que esté pegado al texto */
+  margin-left: 220px;
 }
-
-// CSS de menú principal
-ion-menu::part(backdrop) {
-  background-color: rgb(250, 227, 50);
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
-
-ion-menu::part(container) {
-  border-radius: 0 20px 20px 0;
-
-  box-shadow: 4px 0px 16px rgb(0, 0, 0);
+.texto-cargando {
+  font-size: 24px; /* Tamaño del texto */
+  margin-left: 180px;
 }
-// CSS de menú principal
