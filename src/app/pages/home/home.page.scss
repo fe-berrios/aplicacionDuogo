@@ -20,7 +20,6 @@
 .icono-cargando {
   font-size: 30px; /* Tamaño del icono */
   animation: spin 1s linear infinite; /* Animación de giro */
-  margin-top: 50px; /* Sin margen inferior para que esté pegado al texto */
   margin-left: 220px;
 }
 @keyframes spin {

@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-olvido',
-  templateUrl: './olvido.page.html',
-  styleUrls: ['./olvido.page.scss'],
+  selector: 'app-recuperar',
+  templateUrl: './recuperar.page.html',
+  styleUrls: ['./recuperar.page.scss'],
 })
-export class OlvidoPage {
+export class RecuperarPage {
+
   tiempoEspera: number = 3; // Tiempo por defecto en segundos
 
   constructor(private router: Router) {}
@@ -14,10 +15,7 @@ export class OlvidoPage {
   cambiarPagina() {
     const tiempoEnMilisegundos = this.tiempoEspera * 1000; // Convertir segundos a milisegundos
     setTimeout(() => {
-      this.router.navigate(['/recuperar']);
+      this.router.navigate(['/usuario']);
     }, tiempoEnMilisegundos);
   }
 }
-
-
-

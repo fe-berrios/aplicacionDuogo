@@ -1,0 +1,23 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/olvido"></ion-back-button>
+    </ion-buttons>
+    <ion-title style="text-align: center;">Recuperar Contraseña</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <ion-toolbar>
+      <ion-card-content>
+        <ion-input color="primary" type="email" label="Ingrese Código" labelPlacement="stacked" fill="outline" placeholder="Ingrese código de 6 dígitos"></ion-input>
+        <br>
+        <ion-input color="primary" type="Nueva contraseña" label="Nueva Contraseña" labelPlacement="stacked" fill="outline" placeholder="Ingrese nueva contraseña" ></ion-input>
+        <br>
+        <ion-input color="primary" type="confirmación contraseña" label="Confirmación" labelPlacement="stacked" fill="outline" placeholder="Confirme contraseña" ></ion-input>
+        <br>
+        <ion-button id="open-loading" color="warning" style="margin-left: 90px;" fill="outline" shape="round" (click)="cambiarPagina()">Iniciar Sesión</ion-button>
+        <ion-loading trigger="open-loading" message="Se enviará un correo de confirmación con “¡Clave cambiada con  éxito!”" duration="3000"></ion-loading>
+      </ion-card-content>
+    </ion-toolbar>
+</ion-content>
