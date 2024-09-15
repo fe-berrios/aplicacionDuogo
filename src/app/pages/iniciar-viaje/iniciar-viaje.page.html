@@ -1,0 +1,55 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-breadcrumbs >
+      <ion-breadcrumb href="/login"> <ion-icon name="home" slot="end"></ion-icon> </ion-breadcrumb>
+      <ion-breadcrumb href="/conductor">Conductor</ion-breadcrumb>
+      <ion-breadcrumb href="/lista-cli">Lista Clientes</ion-breadcrumb>
+      <ion-breadcrumb href="/encuentro">Preparar Viaje</ion-breadcrumb>
+      <ion-breadcrumb href="/espera">Espera</ion-breadcrumb>
+      <ion-breadcrumb href="/iniciar-viaje">Iniciar Viaje</ion-breadcrumb>
+  </ion-breadcrumbs>
+    <ion-title style="text-align: center;">Listado de Clientes</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <br>
+<div class="info-box">
+  <div class="info-item">
+    <p>Persona</p>
+    <ion-checkbox></ion-checkbox>
+  </div>
+
+  <div class="info-item">
+    <p>Persona</p>
+    <ion-checkbox slot="start" checked></ion-checkbox>
+  </div>
+
+  <div>
+  </div>
+
+  <div class="info-item">
+    <p>Persona</p>
+    <ion-checkbox slot="start" checked></ion-checkbox>
+  </div>
+
+  <div>
+  </div>
+
+  <div class="info-item">
+    <p>Persona</p>
+    <ion-checkbox slot="start" checked></ion-checkbox>
+  </div>
+
+  <div>
+  </div>
+
+  <div class="info-item">
+    <p>Persona</p>
+    <ion-checkbox slot="start" checked></ion-checkbox>
+  </div>
+
+  <br>
+
+<ion-button color="warning" style="margin-left: 20px;" fill="outline" shape="round" (click)="cambiarPagina()" >Iniciar viaje</ion-button>
+
+

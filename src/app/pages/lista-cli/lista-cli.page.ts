@@ -2,18 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-conductor',
-  templateUrl: './conductor.page.html',
-  styleUrls: ['./conductor.page.scss'],
+  selector: 'app-lista-cli',
+  templateUrl: './lista-cli.page.html',
+  styleUrls: ['./lista-cli.page.scss'],
 })
-export class ConductorPage {
+export class ListaCliPage {
 
   constructor(private router: Router) {}
 
   cambiarPagina() {
 
-    this.router.navigate(['/lista-cli']);
+    this.router.navigate(['/encuentro']);
     
   }
 
 }
+

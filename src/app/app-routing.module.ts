@@ -34,6 +34,26 @@ const routes: Routes = [
     path: 'usuario',
     loadChildren: () => import('./pages/usuario/usuario.module').then( m => m.UsuarioPageModule)
   },
+  {
+    path: 'lista-cli',
+    loadChildren: () => import('./pages/lista-cli/lista-cli.module').then( m => m.ListaCliPageModule)
+  },
+  {
+    path: 'encuentro',
+    loadChildren: () => import('./pages/encuentro/encuentro.module').then( m => m.EncuentroPageModule)
+  },
+  {
+    path: 'espera',
+    loadChildren: () => import('./pages/espera/espera.module').then( m => m.EsperaPageModule)
+  },
+  {
+    path: 'iniciar-viaje',
+    loadChildren: () => import('./pages/iniciar-viaje/iniciar-viaje.module').then( m => m.IniciarViajePageModule)
+  },
+  {
+    path: 'finalizar-viaje',
+    loadChildren: () => import('./pages/finalizar-viaje/finalizar-viaje.module').then( m => m.FinalizarViajePageModule)
+  },
 
 ];
 

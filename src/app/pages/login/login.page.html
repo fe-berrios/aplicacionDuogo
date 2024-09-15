@@ -12,7 +12,9 @@
       <ion-card-content>
         <ion-input color="primary" type="email" label="Correo" labelPlacement="stacked" fill="outline" placeholder="ejemplo@duocuc.cl"></ion-input>
         <br>
-        <ion-input color="primary" type="password" label="Contraseña" labelPlacement="stacked" fill="outline" placeholder="********" ></ion-input>
+        <ion-input color="primary" type="password" label="Contraseña" labelPlacement="stacked" fill="outline" value="Aquí va la contraseña" >
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
         <p><a routerLink="/olvido">Olvide Mi Contraseña</a></p>
         <br>
         <ion-button color="warning" style="margin-left: 100px;" fill="outline" shape="round">Iniciar Sesión</ion-button>
