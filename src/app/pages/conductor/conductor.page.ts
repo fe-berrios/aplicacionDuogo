@@ -16,4 +16,10 @@ export class ConductorPage {
     
   }
 
+  cambiarPagina2() {
+
+    this.router.navigate(['/ingresar-vehiculo']);
+    
+  }
+
 }

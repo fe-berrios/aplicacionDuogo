@@ -54,6 +54,14 @@ const routes: Routes = [
     path: 'finalizar-viaje',
     loadChildren: () => import('./pages/finalizar-viaje/finalizar-viaje.module').then( m => m.FinalizarViajePageModule)
   },
+  {
+    path: 'ingresar-vehiculo',
+    loadChildren: () => import('./pages/ingresar-vehiculo/ingresar-vehiculo.module').then( m => m.IngresarVehiculoPageModule)
+  },
+  {
+    path: 'ingresar-documento',
+    loadChildren: () => import('./pages/ingresar-documento/ingresar-documento.module').then( m => m.IngresarDocumentoPageModule)
+  },
 
 ];
 

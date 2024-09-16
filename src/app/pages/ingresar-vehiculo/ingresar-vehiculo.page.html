@@ -1,0 +1,24 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-breadcrumbs>
+      <ion-breadcrumb href="/conductor"> <ion-icon name="home" slot="end"></ion-icon> </ion-breadcrumb>
+      <ion-breadcrumb href="/ingresar-vehiculo">Datos Vehiculo</ion-breadcrumb>  
+    </ion-breadcrumbs>
+    <ion-title style="text-align: center;">Ingrese Datos del Vehiculo</ion-title>
+  </ion-toolbar>
+</ion-header>
+ 
+<div class="info-box">
+  <ion-input color="primary" type="Modelo" label="Modelo" labelPlacement="stacked" fill="outline" placeholder="Modelo"></ion-input>
+  <br>
+  <ion-input color="primary" type="Patente" label="Patente" labelPlacement="stacked" fill="outline" placeholder="XX-XX-00"></ion-input>
+  <br>
+  <ion-input color="primary" type="Color del Vehiculo" label="Color del Vehiculo" labelPlacement="stacked" fill="outline" placeholder="Azul"></ion-input>
+  <br>
+  <ion-input color="primary" type="Capacidad" label="Capacidad" labelPlacement="stacked" fill="outline" placeholder="4"></ion-input>
+</div>
+
+<ion-card-content>
+<ion-button color="warning" style="margin-left: 20px;" fill="outline" shape="round" (click)="cambiarPagina()"> Continuar</ion-button>
+
+</ion-card-content>
