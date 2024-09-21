@@ -13,9 +13,6 @@ export class RecuperarPage {
   constructor(private router: Router) {}
 
   cambiarPagina() {
-    const tiempoEnMilisegundos = this.tiempoEspera * 1000; // Convertir segundos a milisegundos
-    setTimeout(() => {
-      this.router.navigate(['/usuario']);
-    }, tiempoEnMilisegundos);
+    this.router.navigate(['/login']);
   }
 }

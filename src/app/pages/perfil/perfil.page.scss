@@ -1,0 +1,23 @@
+.center-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    text-align: center;
+  }
+  
+  .profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%; /* Imagen circular */
+    object-fit: cover;
+    margin-bottom: 10px; /* Espacio entre la imagen y el nombre */
+  }
+  
+  /* Reducir el espacio entre el nombre, correo y tipo de usuario */
+  .center-content h2, .center-content h5, .center-content h6 {
+    margin: 0;
+    padding: 2px 0; /* Espacio vertical ajustado */
+  }
+  

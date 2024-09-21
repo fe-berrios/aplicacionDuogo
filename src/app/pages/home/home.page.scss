@@ -1,32 +1,8 @@
-
-.imagen{
-  overflow: hidden; 
-}
-
-.imagen {
-  max-width: 100%;                             
-  opacity: 0;    
-  height: 100%;               
-  transform: translateY(20px); 
-  animation: aparecer 3s forwards; 
-  
-}
-@keyframes aparecer {
-  to {
-    opacity: 1;                
-    transform: translateY(0);  
-  }
-}
-.icono-cargando {
-  font-size: 30px; /* Tamaño del icono */
-  animation: spin 1s linear infinite; /* Animación de giro */
-  margin-left: 220px;
-}
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.texto-cargando {
-  font-size: 24px; /* Tamaño del texto */
-  margin-left: 180px;
+.mapa-placeholder {
+  width: 100vw;  /* Hace que la imagen ocupe el ancho completo de la ventana */
+  height: 100vh; /* Hace que la imagen ocupe la altura completa de la ventana */
+  object-fit: cover; /* Asegura que la imagen mantenga sus proporciones al ajustarse */
+  position: absolute; /* Para asegurar que cubra todo el contenido */
+  top: 0;
+  left: 0;
 }

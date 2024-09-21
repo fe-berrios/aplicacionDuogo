@@ -1,7 +1,64 @@
+<!-- Menú lateral -->
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Ajustes</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-    <div class="imagen">
-      <img src="../../../assets/img/logo DuoGo.jpg" alt="" style="margin-top: 150px;">
-      <ion-icon name="sync" class="icono-cargando"></ion-icon>
-      <p class="texto-cargando">Cargando...</p>
-    </div>
+  <ion-content>
+    <ion-list lines="none">
+      <ion-item>
+        <ion-router-link routerLink="/home/perfil">
+          <ion-icon name="person-circle-outline"></ion-icon> Perfil
+        </ion-router-link>
+      </ion-item>
+      <ion-item>
+        <ion-router-link routerLink="/home/historial">
+          <ion-icon name="calendar-outline"></ion-icon> Historial
+        </ion-router-link>
+      </ion-item>
+      <div *ngIf="usuarioTipo()">
+        <ion-item>
+          <ion-router-link routerLink="/home/administrar">
+            <ion-icon name="key-outline"></ion-icon> Administrar
+          </ion-router-link>
+        </ion-item>
+      </div>
+      <ion-item>
+        <a href="#">
+          <ion-icon name="close-outline"></ion-icon> Cerrar sesión
+        </a>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
 
+<!-- Página principal -->
+<div class="ion-page" id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button [routerLink]="['/home']">
+          <img src="../../../assets/img/logo_compact_duogo.png" alt="Logo DuoGO" style="height: 50px; width: 50px;">
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <img src="../../../assets/img/placeholder_map.jpg" alt="mapa" class="mapa-placeholder">
+  </ion-content>
+
+  <ion-tabs>
+    <ion-tab-bar slot="bottom">
+      <ion-tab-button tab="viaje">
+        <ion-icon name="car-outline"></ion-icon>
+        <ion-label>Viajes</ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
+</div>

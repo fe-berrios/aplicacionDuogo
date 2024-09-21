@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<!-- Contenido de la página -->
+<ion-content>
+  <!-- Formulario CRUD usuario/persona -->
+  <ion-card>
+    <!-- [formGroup] que se vincula con el escrito en administrar.page.ts -->
+    <!-- ngSubmit para indicar que accion realizar a la hora de apretar el boton type=submit.-->
+    <form [formGroup]="persona" (ngSubmit)="createUsuario()" style="padding: 10px;">
+      <!-- Atributos de la persona -->
+      <ion-input formControlName="rut" type="text" labelplacement="stacked" label="RUT"></ion-input>
+      <ion-input formControlName="nombre" type="text" labelplacement="stacked" label="Nombre"></ion-input>
+      <ion-input formControlName="apellido" type="text" labelplacement="stacked" label="Apellido"></ion-input>
+      <ion-input formControlName="correo" type="text" labelplacement="stacked" label="Correo"></ion-input>
+      <ion-input formControlName="contrasena" type="text" labelplacement="stacked" label="Contraseña"></ion-input>
+      <ion-input formControlName="contrasena_confirmar" type="text" labelplacement="stacked" label="Confirmar"></ion-input>
+      <ion-input formControlName="tipo_usuario" type="text" labelplacement="stacked" label="Tipo"></ion-input>
+
+      <ion-button id="present-alert"  [disabled]="persona.invalid"  type="submit" size="block" color="primary">REGISTRAR</ion-button> 
+      <!-- Se utiliza (click) ya que no se pueden utilizar dos ngSubmit. -->
+      <ion-button (click)="updateUsuario()" size="block" color="warning">MODIFICAR</ion-button>
+      <ion-button type="reset" size="block" color="medium">LIMPIAR</ion-button>
+    </form>
+  </ion-card>
+
+  <!-- *ngFor que itera en la lista de usuarios -->
+  <ion-list *ngFor="let usuario of usuarios">
+    <!-- Item principal que se muestra en la lista -->
+    <ion-item (click)="usuarioDrop(usuario.rut)">
+      <ion-icon name="person-circle-outline"></ion-icon>
+      <h5 style="padding-left: 10px;">{{ usuario.nombre }} {{usuario.apellido}}</h5>
+    </ion-item>
+  
+    <!-- Dropdown con los detalles del usuario, visible solo al hacer clic -->
+    <div *ngIf="usuarioVisible === usuario.rut" class="dropdown">
+      <ion-label><strong>RUT:</strong> {{ usuario.rut }}</ion-label><br>
+      <ion-label><strong>Correo:</strong> {{ usuario.correo }}</ion-label><br>
+      <ion-label><strong>Tipo de usuario:</strong> {{ usuario.tipo_usuario }}</ion-label><br>
+  
+      <!-- Botones dentro del dropdown -->
+      <ion-button (click)="getUsuario(usuario.rut)" color="warning">BUSCAR</ion-button>
+      <ion-button (click)="deleteUsuario(usuario.rut)" color="danger">ELIMINAR</ion-button>
+    </div>
+  </ion-list>
+  
+
+</ion-content>

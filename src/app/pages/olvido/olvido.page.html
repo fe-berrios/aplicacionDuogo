@@ -3,19 +3,25 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/login"></ion-back-button>
     </ion-buttons>
-    <ion-title style="text-align: center;">Recuperar Contraseña</ion-title>
+    <ion-title>Recuperar contraseña</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-    <ion-toolbar>
-      <ion-card-content>
-        <ion-input color="primary" type="email" label="Ingrese correo registrado" labelPlacement="stacked" fill="outline" placeholder="ejemplo@duocuc.cl"></ion-input>
-        <br>
-        <ion-input color="primary" type="confirmacion email" label="Confirme correo" labelPlacement="stacked" fill="outline" placeholder="ejemplo@duocuc.cl" ></ion-input>
-        <br>
-        <ion-button id="open-loading" color="warning" style="margin-left: 25px;" fill="outline" shape="round" (click)="cambiarPagina()" >Enviar código de recuperación</ion-button>
-        <ion-loading trigger="open-loading" message="Se enviará un código de 6 dígitos para recuperar la cuenta" duration="3000"></ion-loading>
-      </ion-card-content>
-    </ion-toolbar>
+  <ion-card>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Ingrese correo registrado</ion-label>
+        <ion-input color="primary" type="email" placeholder="ejemplo@duocuc.cl"></ion-input>
+      </ion-item>
+      <br>
+      <ion-item>
+        <ion-label position="stacked">Confirme correo</ion-label>
+        <ion-input color="primary" type="email" placeholder="ejemplo@duocuc.cl"></ion-input>
+      </ion-item>
+      <br>
+      <ion-button id="open-loading" color="warning" expand="full" fill="outline" shape="round" (click)="cambiarPagina()">Enviar código de recuperación</ion-button>
+      <ion-loading trigger="open-loading" message="Si el correo esta asociado a alguna cuenta DuoGO, le enviaremos un código de 6 dígitos" duration="3000"></ion-loading>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

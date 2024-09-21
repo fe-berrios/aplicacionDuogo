@@ -1,0 +1,40 @@
+# Git
+// Configuración usuario
+git config --global user.name "fe-berrios"
+git config --global user.email "fe.berrios.ov@gmail.com"
+
+// Clonar proyecto
+git clone 'url'
+npm install
+code .
+
+// Empezar nueva 'branch'
+git branch nombre
+git switch nombre
+
+# Ionic
+// Creación de app
+ionic start nombre blank --type angular ()?
+
+//
+ionic g page pages/nombre
+ionic g service services/nombre
+
+# Páginas
+    espera		*
+    login		*
+    registro	*
+    recuperar	*
+    home		*
+    viaje		*   /home
+    perfil		*   /home
+    historial	*   /home
+    administrar *   /home *ngIf
+    error404    *
+
+# login
+10200300-4
+admin
+
+# Mockups
+https://app.moqups.com/GvALNEn22SHhDSaGIXzxYUQ7UerCM0dE/view/page/ad64222d5

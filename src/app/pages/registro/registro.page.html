@@ -1,11 +1,8 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Se parte de Duogo!</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="ion-padding">
+  <!-- Imagen centrada en el header -->
+  <div class="imagen">
+    <img src="../../../assets/img/logo_duogo_white.png" alt="Logo duoGO" class="logo">
+  </div>
 
 <ion-content>
   <ion-card>
@@ -22,7 +19,8 @@
       <br>
       <ion-input formControlName="contrasena_confirmar" type="password" label="Confirmar Contraseña" labelPlacement="stacked" fill="outline"></ion-input>
       <br>
-      <ion-button color="warning" style="margin-left: 100px;" fill="outline" shape="round">Registrarse</ion-button>
+      <ion-button color="warning" expand="full" fill="outline" shape="round" type="submit">Registrarse</ion-button>
     </form>
   </ion-card>
+  <p style="text-align: center; padding: 5px;">Ya tienes cuenta? <a routerLink="/login">Inicia sesión!</a></p>
 </ion-content>

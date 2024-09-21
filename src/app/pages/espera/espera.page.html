@@ -1,39 +1,10 @@
-<ion-breadcrumbs [maxItems]="4" (ionCollapsedClick)="presentPopover($event)">
-    <ion-breadcrumb href="/login"> <ion-icon name="home" slot="end"></ion-icon> </ion-breadcrumb>  
-    <ion-breadcrumb href="/conductor">Conductor</ion-breadcrumb>
-    <ion-breadcrumb href="/lista-cli">Lista Cliente</ion-breadcrumb>
-    <ion-breadcrumb href="/encuentro">Prepar Viaje</ion-breadcrumb>
-    <ion-breadcrumb href="/espera">Espera</ion-breadcrumb>
-  </ion-breadcrumbs>
-  <ion-popover #popover [isOpen]="isOpen" (didDismiss)="isOpen = false">
-    <ng-template>
-      <ion-content>
-        <ion-list>
-          <ion-item
-            *ngFor="let breadcrumb of collapsedBreadcrumbs; last as isLast"
-            [href]="breadcrumb.href"
-            [lines]="isLast ? 'none' : null"
-          >
-            <ion-label>{{ breadcrumb.textContent }}</ion-label>
-          </ion-item>
-        </ion-list>
-      </ion-content>
-    </ng-template>
-  </ion-popover>
-<div> 
-   <img style="height: 450px; padding: 20px; margin-bottom: auto; margin-left: 10px;" src="../../../assets/img/qr_cancion.png" alt="">
-   <br>
-   <br>
-   <br>
-   <ion-progress-bar [buffer]="buffer" [value]="progress"></ion-progress-bar>
-   <br>
-    <br>
-   <br>
-    
-    <ion-item>
-        <ion-button color="warning" style="margin-left: 150px;" fill="outline" shape="round" >Esperando <ion-spinner name="dots"></ion-spinner></ion-button>    
-    </ion-item>
-</div>
+<ion-content class="ion-padding">
+  <!-- Contenedor para centrar el contenido -->
+  <div class="center-content">
+    <!-- Imagen -->
+    <img src="../../../assets/img/logo_duogo_white.png" alt="Imagen de ejemplo" class="logo-img"/>
 
-
-
+    <!-- Ícono de cargar (spinner) -->
+    <ion-spinner name="crescent" class="spinner-centered"></ion-spinner>
+  </div>
+</ion-content>

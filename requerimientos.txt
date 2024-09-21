@@ -1,0 +1,17 @@
+Entrega (1):
+	Personalizada:
+		(colores, logo & nombre.)
+	Distintos elementos para formulario:
+		(input, radio, check... etc.)
+	Navegación:
+		(login, registro, recuperar contraseña,
+		home, perfil, viajes, administrador &
+		404)
+	CRUD:
+		(Almacenar y administrar a los usuarios creados (alumnos/administrador))
+	Login:
+		Se debe validar login.
+	Validacion:
+		Cualquier campo en formulario.
+	Presentación:
+		PPT y ReadME

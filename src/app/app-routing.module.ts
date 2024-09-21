@@ -8,7 +8,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'espera',
     pathMatch: 'full'
   },
   {
@@ -18,51 +18,24 @@ const routes: Routes = [
   {
     path: 'registro',
     loadChildren: () => import('./pages/registro/registro.module').then( m => m.RegistroPageModule)
-  },  {
-    path: 'olvido',
-    loadChildren: () => import('./pages/olvido/olvido.module').then( m => m.OlvidoPageModule)
   },
   {
     path: 'recuperar',
     loadChildren: () => import('./pages/recuperar/recuperar.module').then( m => m.RecuperarPageModule)
   },
   {
-    path: 'conductor',
-    loadChildren: () => import('./pages/conductor/conductor.module').then( m => m.ConductorPageModule)
-  },
-  {
-    path: 'usuario',
-    loadChildren: () => import('./pages/usuario/usuario.module').then( m => m.UsuarioPageModule)
-  },
-  {
-    path: 'lista-cli',
-    loadChildren: () => import('./pages/lista-cli/lista-cli.module').then( m => m.ListaCliPageModule)
-  },
-  {
-    path: 'encuentro',
-    loadChildren: () => import('./pages/encuentro/encuentro.module').then( m => m.EncuentroPageModule)
+    path: 'olvido',
+    loadChildren: () => import('./pages/olvido/olvido.module').then( m => m.OlvidoPageModule)
   },
   {
     path: 'espera',
     loadChildren: () => import('./pages/espera/espera.module').then( m => m.EsperaPageModule)
   },
   {
-    path: 'iniciar-viaje',
-    loadChildren: () => import('./pages/iniciar-viaje/iniciar-viaje.module').then( m => m.IniciarViajePageModule)
+    path: '**', // '**' Deja el path a todo aquel link que dirija a alguna página que no exista
+    loadChildren: () => import('./pages/error404/error404.module').then( m => m.Error404PageModule)
+    // Este path siempre debe estar al final del json, debido que se recorre el json path por path.
   },
-  {
-    path: 'finalizar-viaje',
-    loadChildren: () => import('./pages/finalizar-viaje/finalizar-viaje.module').then( m => m.FinalizarViajePageModule)
-  },
-  {
-    path: 'ingresar-vehiculo',
-    loadChildren: () => import('./pages/ingresar-vehiculo/ingresar-vehiculo.module').then( m => m.IngresarVehiculoPageModule)
-  },
-  {
-    path: 'ingresar-documento',
-    loadChildren: () => import('./pages/ingresar-documento/ingresar-documento.module').then( m => m.IngresarDocumentoPageModule)
-  },
-
 ];
 
 @NgModule({

@@ -1,0 +1,18 @@
+.center-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.logo-img {
+  width: 200px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.spinner-centered {
+  margin-top: 20px; /* Ajusta el espacio entre la imagen y el spinner si es necesario */
+}
