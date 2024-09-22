@@ -29,10 +29,30 @@ Para poder utilizar esta app, debes seguir estos pasos:
 - Crea tu cuenta y podrás: agendar tu viaje o llevar a tus compañeros
 - Así podrás familiarizate con ellos!!
 
-## Herramientas Utilizadas
-- GitHub
-- Git Bash
-- Visual Studio Code
+
+### Te interesa nuestro código❓ 😲
+## Aquí te enseñamos como descargarlo 😉
+
+> [!IMPORTANT]
+> Para poder utilizar nuestro código necesitaras tener previamente instalado:
+> - Git Bash
+> - Visual Studio Code
+>   
+> Y tener cuenta activa en:
+> - GitHub
+
+1. Clona el código Fuente:
+- https://github.com/fe-berrios/aplicacionDuogo.git
+2. Ingresa a la carpeta que esta en tu ordenador
+- cd aplicacionDuogo/
+3. Instala (este paso solo lo debes realizar si es la primera vez que descargas el proyecto):
+- npm install
+4. Escribe en gitBash:
+- code  .
+5. Levanta el servidor:
+- ionic serve
+6. Ya estas listo para trabajar en nuestro código 😄
+
 
 ## Autores
 
