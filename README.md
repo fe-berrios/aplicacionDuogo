@@ -1,4 +1,5 @@
-# DuoGO
+![logo_duogo_white](https://github.com/user-attachments/assets/20937f55-d2b0-4778-9447-05a179d5f264)
+
 <p align="left">
    <img src="https://img.shields.io/badge/STATUS-EN%20DESAROLLO-purple">
 </p>
@@ -27,3 +28,15 @@ Para poder utilizar esta app, debes seguir estos pasos:
 - Unicamente para alumnos de Duoc UC Sede Puente Alto
 - Crea tu cuenta y podrás: agendar tu viaje o llevar a tus compañeros
 - Así podrás familiarizate con ellos!!
+
+## Herramientas Utilizadas
+- GitHub
+- Git Bash
+- Visual Studio Code
+
+## Autores
+
+| <img src="https://avatars.githubusercontent.com/u/180475714?v=4" width=100><br><sub>Felipe Berrios</sub><br>(https://github.com/fe-berrios)
+| :---: |
+| <img src="https://avatars.githubusercontent.com/u/135190356?v=4" width=100><br><sub>Marilyn Correa</sub><br>(https://github.com/Mar-y7)
+
