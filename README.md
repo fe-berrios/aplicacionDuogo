@@ -42,15 +42,15 @@ Para poder utilizar esta app, debes seguir estos pasos:
 > - GitHub
 
 1. Clona el código Fuente:
-- https://github.com/fe-berrios/aplicacionDuogo.git
+- `https://github.com/fe-berrios/aplicacionDuogo.git`
 2. Ingresa a la carpeta que esta en tu ordenador
-- cd aplicacionDuogo/
+- `cd aplicacionDuogo/`
 3. Instala (este paso solo lo debes realizar si es la primera vez que descargas el proyecto):
-- npm install
+- `npm install`
 4. Escribe en gitBash:
-- code  .
+- `code .`
 5. Levanta el servidor:
-- ionic serve
+- `ionic serve`
 6. Ya estas listo para trabajar en nuestro código 😄
 
 
