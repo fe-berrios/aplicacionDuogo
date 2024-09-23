@@ -22,7 +22,7 @@ export class LoginPage implements OnInit {
   // console.log("Se requieren ambos.")
   authUsuario(rut: string, password: string) {
     if (!rut || !password) {
-      console.log("RUT y contraseña son requeridos.");
+      alert("RUT y contraseña son requeridos.");
       return;
     }
     // Se crea constante usuario, que rescata el usuario.
@@ -37,11 +37,11 @@ export class LoginPage implements OnInit {
         this.router.navigate(['/home']);
         // De lo contrario:
       } else {
-        console.log("Contraseña incorrecta.");
+        alert("Error! RUT o Contraseña son incorrectos.");
       }
       // Cualquier otro error:
     } else {
-      console.log("Error! Usuario no se pudo autentificar.");
+      alert("Error! Usuario no se pudo autentificar.");
     }
   }
   

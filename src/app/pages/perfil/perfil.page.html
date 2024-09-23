@@ -1,8 +1,40 @@
 <ion-content class="ion-padding">
   <div class="center-content">
     <img src="../../../assets/img/icon_user.png" alt="Profile Picture" class="profile-img">
-    <h2>{{ usuario.nombre }} {{ usuario.apellido }}</h2>
-    <h5>{{usuario.correo}}</h5>
-    <h6>{{usuario.tipo_usuario }}</h6>
+    <h2>{{ usuarioForm.controls['nombre'].value }} {{ usuarioForm.controls['apellido'].value }}</h2>
+    <h5>{{ usuarioForm.controls['correo'].value }}</h5>
+    <h5>{{ usuarioForm.controls['telefono'].value }}</h5>
+    <br>
+    <br>
+
+    <!-- 
+    <ion-card class="custom-card">
+      <ion-card-header>
+        <ion-card-title style="color: white;">Actualizar Usuario</ion-card-title>
+      </ion-card-header>
+    
+      <ion-card-content>
+        <form [formGroup]="usuarioForm" (ngSubmit)="updateUsuario()">
+          <ion-input formControlName="telefono" type="tel" fill="outline" label="Teléfono"></ion-input>
+          <br>
+
+          <ion-select formControlName="tipo_usuario" label="¿Eres conductor?" labelPlacement="stacked" fill="outline" placeholder="Seleccionar" (ionChange)="onTipoUsuarioChange()">
+            <ion-select-option value="estudiante_conductor">Sí, soy conductor</ion-select-option>
+            <ion-select-option value="estudiante">No, solo estudiante</ion-select-option>
+          </ion-select>
+          <br>
+
+          <ion-input *ngIf="usuarioForm.get('tipo_usuario')?.value === 'estudiante_conductor'" formControlName="nombre_auto" type="text" label="Nombre del auto" labelPlacement="stacked" fill="outline"></ion-input>
+          <br>
+
+          <ion-input *ngIf="usuarioForm.get('tipo_usuario')?.value === 'estudiante_conductor'" formControlName="capacidad_auto" type="number" label="Capacidad del auto" labelPlacement="stacked" fill="outline"></ion-input>
+          <br>
+
+          <ion-button expand="full" color="success" type="submit">Guardar cambios</ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+    -->
+    
   </div>
 </ion-content>

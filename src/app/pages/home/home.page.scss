@@ -6,3 +6,19 @@
   top: 0;
   left: 0;
 }
+
+/* home.page.scss */
+
+/* home.page.scss */
+
+ion-tab-bar {
+  background-color: #33302b; /* Cambia el color de fondo de los tabs */
+}
+
+ion-tab-button {
+  --color: white; /* Color del texto no seleccionado */
+  --color-selected: #ffcc00; /* Color del texto seleccionado */
+  --background: transparent; /* Asegúrate de que el fondo sea transparente */
+  --background-focused: transparent; /* Fondo al enfocar el tab */
+}
+

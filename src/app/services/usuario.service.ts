@@ -7,17 +7,52 @@ export class UsuarioService {
 
   // Variables atras de crud
   // Se crea array de usuarios
+  // Usuarios de demostración
   usuarios: any[] = [
     {
       rut: '10200300-4',
       nombre: 'Armando',
       apellido: 'Casas',
+      genero: 'Otro',
       correo: 'admin@duocuc.cl',
+      telefono: '+56910002000',
       contrasena: 'admin',
       contrasena_confirmar: 'admin',
-      tipo_usuario: 'administrador'
+      tipo_usuario: 'administrador',
+      nombre_auto: '',
+      capacidad_auto: '',
+      esConductor: false
+    },
+    {
+      rut: '10200300-5',
+      nombre: 'Juan',
+      apellido: 'Perez',
+      genero: 'Masculino',
+      correo: 'ju.perez@duocuc.cl',
+      telefono: '+56910002000',
+      contrasena: 'admin',
+      contrasena_confirmar: 'admin',
+      tipo_usuario: 'estudiante',
+      nombre_auto: '',
+      capacidad_auto: '',
+      esConductor: false
+    },
+    {
+      rut: '10200300-6',
+      nombre: 'Carla',
+      apellido: 'Gonzalez',
+      genero: 'Femenino',
+      correo: 'car.gonzalez@duocuc.cl',
+      telefono: '+56910002000',
+      contrasena: 'admin',
+      contrasena_confirmar: 'admin',
+      tipo_usuario: 'estudiante_conductor',
+      nombre_auto: 'Suzuki Grand Vitara',
+      capacidad_auto: '4',
+      esConductor: true
     }
   ];
+  
 
   constructor() { }
 

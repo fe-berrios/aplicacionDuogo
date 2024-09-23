@@ -5,13 +5,13 @@
   </div>
 
   <!-- Carta de inicio de sesión -->
-  <ion-card>
+  <ion-card class="custom-card">
     <ion-card-header>
       <ion-card-content>
         <!-- Campos de entrada y botones -->
-        <ion-input [(ngModel)]="rut" color="primary" type="text" label="RUT" labelPlacement="stacked" fill="outline"></ion-input>
+        <ion-input [(ngModel)]="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline"></ion-input>
         <br>
-        <ion-input [(ngModel)]="contrasena" color="primary" type="password" label="Contraseña" labelPlacement="stacked" fill="outline">
+        <ion-input [(ngModel)]="contrasena" type="password" label="Contraseña" labelPlacement="stacked" fill="outline">
           <ion-input-password-toggle slot="end"></ion-input-password-toggle>
         </ion-input>
         <p style="text-align: center; padding: 5px;"><a routerLink="/olvido">Olvidé Mi Contraseña</a></p>
@@ -19,5 +19,6 @@
       </ion-card-content>
     </ion-card-header>
   </ion-card>
+  
   <p style="text-align: center; padding: 5px;">Estudiante de Duoc? <a routerLink="/registro">¡Regístrate!</a></p>
 </ion-content>

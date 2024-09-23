@@ -13,14 +13,50 @@ export class AdministrarPage implements OnInit {
   usuarios:any[] = [];
 
   persona = new FormGroup({
-    rut: new FormControl('',[Validators.pattern("[0-9]{7,8}-[0-9kK]{1}"),Validators.required]),
-    nombre: new FormControl('', [Validators.required, Validators.minLength(3)]),
-    apellido: new FormControl('', [Validators.required, Validators.minLength(3)]),
-    correo: new FormControl('', [Validators.required]),
-    contrasena: new FormControl('', [Validators.required]),
-    contrasena_confirmar: new FormControl('', [Validators.required]),
-    tipo_usuario: new FormControl('usuario', [Validators.required])
-  })
+    rut: new FormControl('', [
+      Validators.pattern("[0-9]{7,8}-[0-9kK]{1}"),
+      Validators.required
+    ]),
+    nombre: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.pattern("^[a-zA-Z]+$") // Solo letras
+    ]),
+    apellido: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.pattern("^[a-zA-Z]+$") // Solo letras
+    ]),
+    genero: new FormControl('', [Validators.required]),
+    correo: new FormControl('', [
+      Validators.pattern("^[a-zA-Z0-9._%+-]+@duocuc\\.cl$"),
+      Validators.required
+    ]),
+    telefono: new FormControl('', [
+      Validators.required,
+      Validators.pattern("^[0-9]{9}$") // 9 dígitos
+    ]),
+    contrasena: new FormControl('', [
+      Validators.required,
+      Validators.minLength(2),
+    ]),
+    contrasena_confirmar: new FormControl('', [
+      Validators.required,
+      AdministrarPage.validarContrasenas // Llamada estática
+    ]),
+    tipo_usuario: new FormControl('estudiante', [Validators.required]), // Valor por defecto
+    nombre_auto: new FormControl('', [
+      Validators.minLength(5),
+      Validators.required // Asegúrate de que no esté vacío
+    ]),
+    capacidad_auto: new FormControl('', [
+      Validators.min(2),
+      Validators.max(8),
+      Validators.required,
+      Validators.pattern("^[0-9]*$") // Solo números
+    ]),
+    esConductor: new FormControl(false) // Control para el checkbox
+  });
 
   // El servicio (en 'services') nos permite trabajar la información: 
   // Se importa el DAO creado en 'services/usuario.service.ts'
@@ -80,4 +116,18 @@ export class AdministrarPage implements OnInit {
   usuarioDrop(rut: string){
     this.usuarioVisible = this.usuarioVisible === rut ? null: rut;
   }
+
+  static validarContrasenas(control: FormControl): { [key: string]: boolean } | null {
+    const contrasena = control.parent?.get('contrasena')?.value;
+    return control.value === contrasena ? null : { noCoinciden: true };
+  }
+
+  // Función para manejar el cambio del checkbox
+  onCheckboxChange(isChecked: boolean) {
+    this.persona.controls.tipo_usuario.setValue(isChecked ? 'estudiante_conductor' : 'estudiante');
+  }
+
+  handleChange(ev: CustomEvent) {
+    console.log('Género seleccionado:', ev.detail.value);
+}
 }

@@ -4,23 +4,70 @@
     <img src="../../../assets/img/logo_duogo_white.png" alt="Logo duoGO" class="logo">
   </div>
 
-<ion-content>
-  <ion-card>
+  <ion-card class="custom-card">
     <form [formGroup]="usuario" (ngSubmit)="registroUsuario()" style="margin: 20px;">
-      <ion-input formControlName="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline"></ion-input>
+      <ion-input formControlName="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline" helperText="Sin puntos y con guión."></ion-input>
       <br>
-      <ion-input formControlName="nombre" type="text" label="Nombre" labelPlacement="stacked" fill="outline"></ion-input>
+      <ion-input formControlName="nombre" type="text" label="Nombre" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
       <br>
-      <ion-input formControlName="apellido" type="text" label="Apellido" labelPlacement="stacked" fill="outline"></ion-input>
+      <ion-input formControlName="apellido" type="text" label="Apellido" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
+
       <br>
-      <ion-input formControlName="correo" type="email" label="Correo" labelPlacement="stacked" fill="outline"></ion-input>
+      <ion-list>
+        <ion-label>Género</ion-label>
+        <ion-radio-group formControlName="genero" (ionChange)="handleChange($event)">
+          <ion-item>
+            <ion-label>Masculino</ion-label>
+            <ion-radio slot="start" value="Masculino"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Femenino</ion-label>
+            <ion-radio slot="start" value="Femenino"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Otro</ion-label>
+            <ion-radio slot="start" value="Otro"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+      
       <br>
-      <ion-input formControlName="contrasena" type="password" label="Contraseña" labelPlacement="stacked" fill="outline"></ion-input>
+      
+
+      <ion-input formControlName="telefono" type="text" label="Teléfono" labelPlacement="stacked" fill="outline" helperText="9 dígitos. Solo números."></ion-input>
       <br>
-      <ion-input formControlName="contrasena_confirmar" type="password" label="Confirmar Contraseña" labelPlacement="stacked" fill="outline"></ion-input>
+      <ion-input formControlName="correo" type="email" label="Correo" labelPlacement="stacked" fill="outline" helperText="Debe ser un correo institucional! (@duocuc.cl)"></ion-input>
       <br>
+
+
+      <ion-item>
+        <ion-checkbox 
+          formControlName="esConductor" 
+          (ionChange)="onCheckboxChange($event.detail.checked)" 
+          slot="start">
+        </ion-checkbox>
+        <ion-label>Eres conductor?</ion-label>
+      </ion-item>
+      
+      
+    
+      <br>
+      <ion-input *ngIf="usuario.controls.tipo_usuario.value=='estudiante_conductor'" formControlName="nombre_auto" type="text" label="Marca de auto" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
+      <br>
+      <ion-input *ngIf="usuario.controls.tipo_usuario.value=='estudiante_conductor'" formControlName="capacidad_auto" type="number" label="Capacidad de auto" labelPlacement="stacked" fill="outline" helperText="Solo números, minimo 2."></ion-input>
+      <br>
+      <ion-input formControlName="contrasena" type="password" label="Contraseña" labelPlacement="stacked" fill="outline" helperText="Mínimo de 2 caracteres.">
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+      <br>
+      <ion-input formControlName="contrasena_confirmar" type="password" label="Confirmar Contraseña" labelPlacement="stacked" fill="outline" helperText="Debe ser igual a la contraseña anterior.">
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+      <br>
+
       <ion-button color="warning" expand="full" fill="outline" shape="round" type="submit">Registrarse</ion-button>
     </form>
   </ion-card>
-  <p style="text-align: center; padding: 5px;">Ya tienes cuenta? <a routerLink="/login">Inicia sesión!</a></p>
+
+  <p style="text-align: center; padding: 5px;">¿Ya tienes cuenta? <a routerLink="/login">¡Inicia sesión!</a></p>
 </ion-content>
