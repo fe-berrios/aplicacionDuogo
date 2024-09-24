@@ -32,30 +32,26 @@
       </ion-list>
       
       <br>
-      
 
       <ion-input formControlName="telefono" type="text" label="Teléfono" labelPlacement="stacked" fill="outline" helperText="9 dígitos. Solo números."></ion-input>
       <br>
       <ion-input formControlName="correo" type="email" label="Correo" labelPlacement="stacked" fill="outline" helperText="Debe ser un correo institucional! (@duocuc.cl)"></ion-input>
       <br>
 
-
+      <!-- Checkbox para conductor -->
       <ion-item>
-        <ion-checkbox 
-          formControlName="esConductor" 
-          (ionChange)="onCheckboxChange($event.detail.checked)" 
-          slot="start">
-        </ion-checkbox>
+        <ion-checkbox formControlName="esConductor" slot="start"></ion-checkbox>
         <ion-label>Eres conductor?</ion-label>
       </ion-item>
       
-      
-    
       <br>
-      <ion-input *ngIf="usuario.controls.tipo_usuario.value=='estudiante_conductor'" formControlName="nombre_auto" type="text" label="Marca de auto" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
+
+      <!-- Campos adicionales si es conductor -->
+      <ion-input *ngIf="usuario.get('esConductor')?.value" formControlName="nombre_auto" type="text" label="Marca de auto" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
       <br>
-      <ion-input *ngIf="usuario.controls.tipo_usuario.value=='estudiante_conductor'" formControlName="capacidad_auto" type="number" label="Capacidad de auto" labelPlacement="stacked" fill="outline" helperText="Solo números, minimo 2."></ion-input>
+      <ion-input *ngIf="usuario.get('esConductor')?.value" formControlName="capacidad_auto" type="number" label="Capacidad de auto" labelPlacement="stacked" fill="outline" helperText="Solo números, minimo 2."></ion-input>
       <br>
+
       <ion-input formControlName="contrasena" type="password" label="Contraseña" labelPlacement="stacked" fill="outline" helperText="Mínimo de 2 caracteres.">
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
       </ion-input>
@@ -65,7 +61,7 @@
       </ion-input>
       <br>
 
-      <ion-button color="warning" expand="full" fill="outline" shape="round" type="submit">Registrarse</ion-button>
+      <ion-button [disabled]="!usuario.valid" color="warning" expand="full" fill="outline" shape="round" type="submit">Registrarse</ion-button>
     </form>
   </ion-card>
 
