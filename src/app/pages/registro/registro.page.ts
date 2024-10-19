@@ -73,7 +73,7 @@ export class RegistroPage implements OnInit {
   }
 
   public async registroUsuario(): Promise<void> {
-    if (this.usuarioService.createUsuario(this.usuario.value)) {
+    if (await this.usuarioService.createUsuario(this.usuario.value)) {
       console.log("Usuario creado con éxito!");
       console.log(JSON.stringify(this.usuario.value)); // Imprime el usuario en formato JSON
 

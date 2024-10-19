@@ -1,64 +1,49 @@
-<!-- Menú lateral -->
-<ion-menu contentId="main-content">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Ajustes</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-tabs>
+  <ion-tab tab="casa" selected>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Casa</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div id="map_home"></div> <!-- Mapa ocupa toda la altura -->
+    </ion-content>
+  </ion-tab>
 
-  <ion-content>
-    <ion-list lines="none">
-      <ion-item>
-        <ion-router-link routerLink="/home/perfil">
-          <ion-icon name="person-circle-outline"></ion-icon> Perfil
-        </ion-router-link>
-      </ion-item>
-      <ion-item>
-        <ion-router-link routerLink="/home/historial">
-          <ion-icon name="calendar-outline"></ion-icon> Historial
-        </ion-router-link>
-      </ion-item>
-      <div *ngIf="usuarioTipo()">
-        <ion-item>
-          <ion-router-link routerLink="/home/administrar">
-            <ion-icon name="key-outline"></ion-icon> Administrar
-          </ion-router-link>
-        </ion-item>
-      </div>
-      <ion-item>
-        <a href="#" style="text-decoration: none;">
-          <ion-icon name="close-outline"></ion-icon> Cerrar sesión
-        </a>
-      </ion-item>
-    </ion-list>
-  </ion-content>
-</ion-menu>
+  <ion-tab tab="viajes">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Viajes</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="example-content">Contenido de Viajes</div>
+    </ion-content>
+  </ion-tab>
 
-<!-- Página principal -->
-<div class="ion-page" id="main-content">
-  <ion-header>
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
-      </ion-buttons>
-      <ion-buttons slot="end">
-        <ion-button [routerLink]="['/home']">
-          <img src="../../../assets/img/logo_duogo_white.png" alt="Logo DuoGO" style="height: 50px; width: 120px;" class="logo">
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+  <ion-tab tab="perfil">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Perfil</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div class="example-content">Contenido de Perfil</div>
+    </ion-content>
+  </ion-tab>
 
-  <ion-content>
-    <img src="../../../assets/img/placeholder_map.jpg" alt="mapa" class="mapa-placeholder">
-  </ion-content>
-
-  <ion-tabs>
-    <ion-tab-bar slot="bottom">
-      <ion-tab-button tab="viaje">
-        <ion-icon name="car-outline"></ion-icon>
-        <ion-label>Viajes</ion-label>
-      </ion-tab-button>
-    </ion-tab-bar>
-  </ion-tabs>
-</div>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="casa">
+      <ion-icon name="home"></ion-icon>
+      Casa
+    </ion-tab-button>
+    <ion-tab-button tab="viajes">
+      <ion-icon name="car"></ion-icon>
+      Viajes
+    </ion-tab-button>
+    <ion-tab-button tab="perfil">
+      <ion-icon name="person"></ion-icon>
+      Perfil
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

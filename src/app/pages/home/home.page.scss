@@ -1,11 +1,21 @@
-.mapa-placeholder {
-  width: 100vw;  /* Hace que la imagen ocupe el ancho completo de la ventana */
-  height: 100vh; /* Hace que la imagen ocupe la altura completa de la ventana */
-  object-fit: cover; /* Asegura que la imagen mantenga sus proporciones al ajustarse */
-  position: absolute; /* Para asegurar que cubra todo el contenido */
+#map_home {
+  height: 100%;  /* Cambia la altura al 100% del contenedor */
+  width: 100%;
+  position: absolute; /* Asegura que ocupe todo el espacio */
   top: 0;
+  bottom: 0;
   left: 0;
+  right: 0;
 }
+
+ion-content {
+  position: relative;
+}
+
+html, body, ion-content {
+  height: 100%;
+}
+
 
 /* home.page.scss */
 
