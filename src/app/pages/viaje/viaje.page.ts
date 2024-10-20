@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ViajeService } from 'src/app/services/viaje.service';
 
 @Component({
   selector: 'app-viaje',
@@ -7,13 +8,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ViajePage implements OnInit {
 
-  constructor() { }
+  viajes: any[] = [];
+
+  constructor(private viajeService: ViajeService) { }
 
   ngOnInit() {
+    this.getViajes();
   }
 
   agendarViaje(){
     alert("Agendado!")
+  }
+
+  async getViajes(){
+    this.viajes = await this.viajeService.getViajes(); 
   }
 
 }

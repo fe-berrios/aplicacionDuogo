@@ -32,10 +32,15 @@ const routes: Routes = [
     loadChildren: () => import('./pages/espera/espera.module').then( m => m.EsperaPageModule)
   },
   {
+    path: 'crear-viaje',
+    loadChildren: () => import('./pages/crear-viaje/crear-viaje.module').then( m => m.CrearViajePageModule)
+  },
+  {
     path: '**', // '**' Deja el path a todo aquel link que dirija a alguna página que no exista
     loadChildren: () => import('./pages/error404/error404.module').then( m => m.Error404PageModule)
     // Este path siempre debe estar al final del json, debido que se recorre el json path por path.
   },
+
 ];
 
 @NgModule({

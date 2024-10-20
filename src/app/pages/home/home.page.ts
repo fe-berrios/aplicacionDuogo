@@ -56,4 +56,8 @@ export class HomePage {
     }
     return false;
   }
+
+  goToHome() {
+    this.router.navigateByUrl('/home');
+  }
 }

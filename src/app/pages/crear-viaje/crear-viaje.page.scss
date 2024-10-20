@@ -1,0 +1,24 @@
+.map-container {
+    width: 100%;          /* Ancho del contenedor ajustable al 100% del navegador */
+    height: 300px;        /* Altura fija */
+    margin: 0 auto;       /* Centra el contenedor del mapa horizontalmente */
+    position: relative;
+    border: 1px solid #000000;  /* Bordes para mejor visualización */
+    border-radius: 20px;  /* Bordes redondeados */
+    overflow: hidden;     /* Evita desbordamiento */
+  }
+  
+  #map_create {
+    width: 100%;          /* El mapa ocupa el 100% del ancho del contenedor */
+    height: 100%;         /* El mapa ocupa el 100% de la altura del contenedor */
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .leaflet-container {
+    color: #000000;
+  }
+  

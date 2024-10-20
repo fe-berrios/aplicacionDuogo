@@ -1,48 +1,19 @@
+<ion-content>
+  <div id="map_home"></div>
+</ion-content>
+
 <ion-tabs>
-  <ion-tab tab="casa" selected>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Casa</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <div id="map_home"></div> <!-- Mapa ocupa toda la altura -->
-    </ion-content>
-  </ion-tab>
-
-  <ion-tab tab="viajes">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Viajes</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <div class="example-content">Contenido de Viajes</div>
-    </ion-content>
-  </ion-tab>
-
-  <ion-tab tab="perfil">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Perfil</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <div class="example-content">Contenido de Perfil</div>
-    </ion-content>
-  </ion-tab>
-
   <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="casa">
-      <ion-icon name="home"></ion-icon>
-      Casa
+    <ion-tab-button (click)="goToHome()">
+      <ion-icon name="play-circle"></ion-icon>
+      Home
     </ion-tab-button>
-    <ion-tab-button tab="viajes">
-      <ion-icon name="car"></ion-icon>
-      Viajes
+    <ion-tab-button tab="viaje">
+      <ion-icon name="radio"></ion-icon>
+      Viaje
     </ion-tab-button>
     <ion-tab-button tab="perfil">
-      <ion-icon name="person"></ion-icon>
+      <ion-icon name="library"></ion-icon>
       Perfil
     </ion-tab-button>
   </ion-tab-bar>

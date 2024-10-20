@@ -53,8 +53,8 @@ export class RegistroPage implements OnInit {
 
   constructor(private usuarioService: UsuarioService, private router: Router, private alertController: AlertController) { }
 
-  ngOnInit() {
-    this.usuarios = this.usuarioService.getUsuarios();
+  async ngOnInit() {
+    this.usuarios = await this.usuarioService.getUsuarios();
 
     // Escuchar cambios en el checkbox 'esConductor' para ajustar las validaciones
     this.usuario.get('esConductor')?.valueChanges.subscribe(isConductor => {

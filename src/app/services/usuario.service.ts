@@ -34,6 +34,17 @@ export class UsuarioService {
     return true;
   }
 
+  public async getUsuario(rut:string): Promise<any>{
+    let usuarios: any[] = await this.storage.get("usuarios") || [];
+    return usuarios.find(usu => usu.rut == rut);
+  }
+
+  // Especifica que devuelve una lista[] de algo 'any'
+  public async getUsuarios(): Promise<any[]>{
+    let usuarios: any[] = await this.storage.get("usuarios") || [];
+    return usuarios;
+  }
+
   // Método debe ser siempre 'async' cuando se trabaja con await!
   // Un método async ya que esta 'asincronico' debe devolver una 'promesa' de algo.
   public async updateUsuario(rut:string, nuevoUsuario:any): Promise<boolean>{
@@ -59,17 +70,6 @@ export class UsuarioService {
     usuarios.splice(index, 1);
     await this.storage.set("usuarios", usuarios);
     return true;
-  }
-
-  public async getUsuario(rut:string): Promise<any>{
-    let usuarios: any[] = await this.storage.get("usuarios") || [];
-    return usuarios.find(usu => usu.rut == rut);
-  }
-
-  // Especifica que devuelve una lista[] de algo 'any'
-  public async getUsuarios(): Promise<any[]>{
-    let usuarios: any[] = await this.storage.get("usuarios") || [];
-    return usuarios;
   }
 
   public async authUsuario (correo: string, contrasena: string): Promise<any>{

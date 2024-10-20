@@ -20,7 +20,7 @@ export class LoginPage implements OnInit {
   // Método autentificar (rut, contraseña) -> Se rescatan del html.
   // Se pregunta si rut o contraseña faltan entonces
   // console.log("Se requieren ambos.")
-  authUsuario(rut: string, password: string) {
+  async authUsuario(rut: string, password: string) {
     if (!rut || !password) {
       alert("RUT y contraseña son requeridos.");
       return;
@@ -28,7 +28,7 @@ export class LoginPage implements OnInit {
     // Se crea constante usuario, que rescata el usuario.
     // Si el usuario existe, entonces preguntamos:
     // Si usuario.contrasena, es igual a la rescatada entonces 'LogIn!'
-    const usuario = this.usuarioService.getUsuario(rut);
+    const usuario = await this.usuarioService.getUsuario(rut);
     if (usuario) {
       if (usuario.contrasena === password) {
         // Se guarda la sesion del 'usuario'

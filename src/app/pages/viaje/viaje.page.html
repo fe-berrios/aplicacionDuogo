@@ -1,11 +1,18 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>viaje</ion-title>
+    <ion-title>Viajes</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-card>
+
+  <!-- Botón para crear un viaje -->
+  <ion-button expand="full" [routerLink]="['/crear-viaje']">
+    Crear Viaje
+  </ion-button>
+
+  <!-- Lista de viajes -->
+  <ion-card *ngFor="let viaje of viajes">
     <ion-card-content>
       <!-- Item 1 Sliding -->
       <ion-item-sliding>
@@ -14,14 +21,14 @@
             <ion-icon name="person-circle-outline"></ion-icon>
           </ion-avatar>
           <ion-label>
-            <h2>Armando Casas</h2>
-            <p>Estudiante de Ing. en Informática</p>
-            <p>Suzuki Grand Vitara</p>
+            <h2>{{ viaje.id }}</h2>
+            <p>{{ viaje.estudiante_conductor }}</p>
+            <p>{{ viaje.nombre_destino }}</p>
           </ion-label>
         </ion-item>
 
         <ion-item-options side="end">
-          <ion-item-option color="success" (click)="agendarViaje()">
+          <ion-item-option color="success">
             Agendar
           </ion-item-option>
         </ion-item-options>
@@ -30,18 +37,19 @@
       <ion-grid>
         <ion-row>
           <ion-col>
-            <p><strong>Desde:</strong> DUOC UC</p>
+            <p><strong>Desde:</strong> {{ viaje.origen }}</p>
           </ion-col>
           <ion-col>
-            <p><strong>Hasta:</strong> Domingo Tocomal</p>
+            <p><strong>Hasta:</strong> {{ viaje.destino }}</p>
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col>
-            <p><strong>Capacidad:</strong> 3/4</p>
+            <p><strong>Capacidad:</strong> {{ viaje.capacidad }}</p>
           </ion-col>
         </ion-row>
       </ion-grid>
     </ion-card-content>
   </ion-card>
+
 </ion-content>

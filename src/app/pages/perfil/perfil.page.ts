@@ -61,7 +61,7 @@ export class PerfilPage implements OnInit {
   }
 
   // Actualizar usuario
-  updateUsuario() {
+  async updateUsuario() {
     const rut_buscar = this.usuarioForm.controls['rut'].value || "";
 
     // Verifica el tipo de usuario y resetea los campos de auto si es estudiante
@@ -70,7 +70,7 @@ export class PerfilPage implements OnInit {
       this.usuarioForm.controls['capacidad_auto'].setValue('');
     }
 
-    if (this.usuarioService.updateUsuario(rut_buscar, this.usuarioForm.value)) {
+    if (await this.usuarioService.updateUsuario(rut_buscar, this.usuarioForm.value)) {
       alert("Usuario modificado con éxito!");
       // Aquí podrías actualizar la sesión, si lo deseas
     } else {
