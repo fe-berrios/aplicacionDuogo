@@ -72,9 +72,9 @@ export class UsuarioService {
     return true;
   }
 
-  public async authUsuario (correo: string, contrasena: string): Promise<any>{
+  public async authUsuario (rut: string, contrasena: string): Promise<any>{
     let usuarios: any[] = await this.storage.get("usuarios") || [];
-    const usuarioAuth = usuarios.find(usu => usu.correo == correo && usu.contrasena == contrasena);
+    const usuarioAuth = usuarios.find(usu => usu.rut == rut && usu.contrasena == contrasena);
     // Si encontro algo:
     if (usuarioAuth){
       // Se guarda en localStorage (para obtener el usuario en sesión) y se debe cambiar a string ya que...

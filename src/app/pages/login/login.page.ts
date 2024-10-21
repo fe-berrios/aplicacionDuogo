@@ -20,28 +20,11 @@ export class LoginPage implements OnInit {
   // Método autentificar (rut, contraseña) -> Se rescatan del html.
   // Se pregunta si rut o contraseña faltan entonces
   // console.log("Se requieren ambos.")
-  async authUsuario(rut: string, password: string) {
-    if (!rut || !password) {
-      alert("RUT y contraseña son requeridos.");
-      return;
-    }
-    // Se crea constante usuario, que rescata el usuario.
-    // Si el usuario existe, entonces preguntamos:
-    // Si usuario.contrasena, es igual a la rescatada entonces 'LogIn!'
-    const usuario = await this.usuarioService.getUsuario(rut);
-    if (usuario) {
-      if (usuario.contrasena === password) {
-        // Se guarda la sesion del 'usuario'
-        sessionStorage.setItem('usuario', JSON.stringify(usuario));
-        console.log("Log in");
-        this.router.navigate(['/home']);
-        // De lo contrario:
-      } else {
-        alert("Error! RUT o Contraseña son incorrectos.");
-      }
-      // Cualquier otro error:
+  async authUsuario() {
+    if(await this.usuarioService.authUsuario(this.rut, this.contrasena)){
+      this.router.navigate(['/home']);
     } else {
-      alert("Error! Usuario no se pudo autentificar.");
+      console.log("woops")
     }
   }
   

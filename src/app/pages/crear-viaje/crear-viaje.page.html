@@ -14,25 +14,16 @@
 
   <ion-card class="custom-card">
     <form [formGroup]="viaje" (ngSubmit)="createViaje()" style="margin: 20px;">
-      <ion-input formControlName="id" type="text" label="ID" labelPlacement="stacked" fill="outline" helperText="Sin puntos y con guión."></ion-input>
+      <ion-input formControlName="asientos_disponibles" type="number" label="Asientos disponibles" labelPlacement="stacked" fill="outline" helperText="No puede ser menor/mayor a la cantidad de asientos de su vehiculo"></ion-input>
       <br>
-      <ion-input formControlName="estudiante_conductor" type="text" label="CONDUCTOR" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
+  
+      <!-- Vincular el ion-radio-group con formControlName -->
+      <ion-radio-group formControlName="forma_pago">
+        <ion-radio value="Efectivo">Efectivo</ion-radio><br />
+        <ion-radio value="Transferencia">Transferencia</ion-radio><br />
+      </ion-radio-group>
       <br>
-      <ion-input formControlName="asientos_disponibles" type="text" label="ASIENTOS" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
-      <ion-input formControlName="nombre_destino" type="text" label="DESTINO" labelPlacement="stacked" fill="outline" helperText="Sin puntos y con guión."></ion-input>
-      <br>
-      <ion-input formControlName="latitud" type="text" label="LATITUD" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
-      <br>
-      <ion-input formControlName="longitud" type="text" label="LONGITUD" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
-      <ion-input formControlName="distancia_metros" type="text" label="DISTANCIA" labelPlacement="stacked" fill="outline" helperText="Sin puntos y con guión."></ion-input>
-      <br>
-      <ion-input formControlName="tiempo_segundos" type="text" label="TIEMPO" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
-      <br>
-      <ion-input formControlName="forma_pago" type="text" label="FORMAPAGO" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
-      <ion-input formControlName="estado_viaje" type="text" label="ESTADO" labelPlacement="stacked" fill="outline" helperText="Sin puntos y con guión."></ion-input>
-      <br>
-      <ion-input formControlName="pasajeros" type="text" label="PASAJEROS" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
-
+  
       <ion-button color="warning" expand="full" fill="outline" shape="round" type="submit">Crear</ion-button>
     </form>
   </ion-card>

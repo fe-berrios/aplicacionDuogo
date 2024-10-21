@@ -7,6 +7,7 @@ import { ViajeService } from 'src/app/services/viaje.service';
 import * as leaflet from 'leaflet';
 import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-crear-viaje',
@@ -27,87 +28,116 @@ export class CrearViajePage implements OnInit {
   tiempoSegundos: number = 0;
 
   viaje = new FormGroup({
-    id: new FormControl('', [Validators.required]),
-    estudiante_conductor: new FormControl('', [Validators.required]),
+    id: new FormControl(''),
+    estudiante_conductor: new FormControl(''),
     asientos_disponibles: new FormControl('', [Validators.required]),
-    nombre_destino: new FormControl('', [Validators.required]),
-    latitud: new FormControl('', [Validators.required]),
-    longitud: new FormControl('', [Validators.required]),
-    distancia_metros: new FormControl('', [Validators.required]),
-    tiempo_segundos: new FormControl('', [Validators.required]),
+    nombre_destino: new FormControl(''),
+    latitud: new FormControl(''),
+    longitud: new FormControl(''),
+    distancia_metros: new FormControl(''),
+    tiempo_segundos: new FormControl(''),
     forma_pago: new FormControl('', [Validators.required]),
-    estado_viaje: new FormControl('', [Validators.required]),
-    pasajeros: new FormControl('', [Validators.required])
+    estado_viaje: new FormControl(''),
+    pasajeros: new FormControl('')
   })
 
-  constructor(private router: Router,private viajeService: ViajeService) { }
+  constructor(private router: Router, private viajeService: ViajeService) { }
 
   ngOnInit() {
     this.initMapa();
+
+    // Rescatamos el usuario al iniciar /crear-viaje
+    const usuarioConductor = localStorage.getItem('usuario');
+
+    if (usuarioConductor) {
+      // Se parsea de JSON a string
+      const usuario = JSON.parse(usuarioConductor);
+
+      this.viaje.patchValue({
+        // Se asigna el estudiante_conductor al viaje
+        estudiante_conductor: usuario.rut,
+        estado_viaje: 'Pendiente'
+      })
+    }
   }
 
   initMapa(){
     // 'locate' Ubicación actual utiliza TÚ ubicación de dispositivo.
-    this.map = leaflet.map('map_create').setView([-33.59838016321339, -70.57879780298838],16);
-    //this.map = leaflet.map("map_html").setView([-33.608552227594245, -70.58039819211703],16);
-    // Plantilla para que el mapa sea visible
+    this.map = leaflet.map('map_create').setView([-33.59838016321339, -70.57879780298838], 16);
     leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      // Se debe agregar el 'addTo' para vincular el mapa con la variable mapa
     }).addTo(this.map);
 
     // Agregar buscador de direcciones en el mapa
     this.geocoder = geo.geocoder({
-      // '?' Son caracteristicas del buscador
       placeholder: "Ingrese dirección a buscar",
       errorMessage: "Dirección NO encontrada"
-      // Se debe agregar el 'addTo(this.map)' para vincular el buscador con el mapa
     }).addTo(this.map);
 
-    // Cuando el mapa se cargue y logre encontrar mi direccion actual
-    this.map.on('locationfound', (e) => {
-      // Rescata la latitud y longitud de mi ubicación
-      console.log(e.latlng.lat);
-      console.log(e.latlng.lng);
-    })
-
-    // Vamos a realizar una acción con el buscador
-    // () significa que es una función
-    // => Agrega las variables que se encuentran afuera de su "método"
     this.geocoder.on('markgeocode', (e) => {
-      // Aquí se llenan las variables anteriormente creadas con la informacion del buscador
-      // Para visualizar las propiedades de la dirección del buscador
-      console.log(e.geocode.properties)
+      // Asignar latitud, longitud y dirección desde la búsqueda en el mapa
       this.latitud = e.geocode.properties['lat'];
       this.longitud = e.geocode.properties['lon'];
       this.direccion = e.geocode.properties['display_name'];
 
-      if (this.map){
+      // Convertir los valores numéricos a strings antes de pasarlos al formulario
+      this.viaje.patchValue({
+        latitud: this.latitud.toString(),
+        longitud: this.longitud.toString(),
+        nombre_destino: this.direccion
+      });
+
+      if (this.map) {
         leaflet.Routing.control({
-          // waypoints pide leaflet.latLng()
-          // -33, -70 (lat, long de DuocUC Puente Alto)
-          waypoints: [leaflet.latLng(-33.59838016321339, -70.57879780298838), leaflet.latLng(this.latitud, this.longitud)],
+          waypoints: [
+            leaflet.latLng(-33.59838016321339, -70.57879780298838),
+            leaflet.latLng(this.latitud, this.longitud)
+          ],
           fitSelectedRoutes: true
-          // Cuando encuentre la ruta sucederá una acción (e)
-        }).on('routesfound', (e)=>{
-          // El evento (e) tiene una propiedad routes [] y en su primera posicion 0, tiene una propiedad summary con totalDistance/totalTime
+        }).on('routesfound', (e) => {
+          // Obtener distancia y tiempo de la ruta
           this.distanciaMetros = e.routes[0].summary.totalDistance;
           this.tiempoSegundos = e.routes[0].summary.totalTime;
+
+          // Convertir los valores numéricos a strings antes de pasarlos al formulario
+          this.viaje.patchValue({
+            distancia_metros: this.distanciaMetros.toString(),
+            tiempo_segundos: this.tiempoSegundos.toString()
+          });
         }).addTo(this.map);
       }
-    })
+    });
   }
 
-  async createViaje(){
-    if (await this.viajeService.createViaje(this.viaje.value)){
-      console.log("Viaje creado con éxito!")
+  // El método createViaje debe estar fuera del initMapa()
+  async createViaje() {
+    // Leer el último id desde el localStorage o iniciar en 1 si no existe
+    const lastId = localStorage.getItem('lastViajeId');
+    let newId = 1;
+  
+    if (lastId) {
+      // Incrementar el último id
+      newId = parseInt(lastId) + 1;
+    }
+  
+    // Asignar el nuevo id al formulario
+    this.viaje.patchValue({
+      id: newId.toString()  // Convertir a string si es necesario para el formControl
+    });
+  
+    // Guardar el nuevo viaje utilizando el servicio
+    if (await this.viajeService.createViaje(this.viaje.value)) {
+      console.log("Viaje creado con éxito!");
       console.log(JSON.stringify(this.viaje.value));
-      
-      this.router.navigate(['/home/viaje'])
-
+  
+      // Guardar el nuevo id en el localStorage para la próxima vez
+      localStorage.setItem('lastViajeId', newId.toString());
+  
+      // Redirigir a otra página si es necesario
+      this.router.navigate(['/home/viaje']);
     } else {
-      console.log("Error! No se pudo crear el usuario");
+      console.log("Error! No se pudo crear el viaje");
     }
   }
 
