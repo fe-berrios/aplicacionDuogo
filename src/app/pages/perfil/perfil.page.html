@@ -1,40 +1,19 @@
 <ion-content class="ion-padding">
   <div class="center-content">
     <img src="../../../assets/img/icon_user.png" alt="Profile Picture" class="profile-img">
-    <h2>{{ usuarioForm.controls['nombre'].value }} {{ usuarioForm.controls['apellido'].value }}</h2>
-    <h5>{{ usuarioForm.controls['correo'].value }}</h5>
-    <h5>{{ usuarioForm.controls['telefono'].value }}</h5>
-    <br>
-    <br>
 
-    <!-- 
-    <ion-card class="custom-card">
-      <ion-card-header>
-        <ion-card-title style="color: white;">Actualizar Usuario</ion-card-title>
-      </ion-card-header>
-    
-      <ion-card-content>
-        <form [formGroup]="usuarioForm" (ngSubmit)="updateUsuario()">
-          <ion-input formControlName="telefono" type="tel" fill="outline" label="Teléfono"></ion-input>
-          <br>
+  <ion-card *ngIf="usuario">
+    <ion-card-header>
+    <ion-card-title>{{ usuario.nombre }}</ion-card-title> <!-- Muestra el nombre del usuario -->
+    <ion-card-subtitle>RUT: {{ usuario.rut }}</ion-card-subtitle> <!-- Muestra el ID del usuario -->
+    </ion-card-header>
 
-          <ion-select formControlName="tipo_usuario" label="¿Eres conductor?" labelPlacement="stacked" fill="outline" placeholder="Seleccionar" (ionChange)="onTipoUsuarioChange()">
-            <ion-select-option value="estudiante_conductor">Sí, soy conductor</ion-select-option>
-            <ion-select-option value="estudiante">No, solo estudiante</ion-select-option>
-          </ion-select>
-          <br>
+    <ion-card-content>
+    <p>Email: {{ usuario.correo }}</p> <!-- Muestra el email del usuario -->
+    <p>Teléfono: {{ usuario.telefono }}</p> <!-- Muestra el teléfono del usuario -->
+    <!-- Agrega más campos según los datos que tengas en el objeto usuario -->
+    </ion-card-content>
+  </ion-card>
 
-          <ion-input *ngIf="usuarioForm.get('tipo_usuario')?.value === 'estudiante_conductor'" formControlName="nombre_auto" type="text" label="Nombre del auto" labelPlacement="stacked" fill="outline"></ion-input>
-          <br>
-
-          <ion-input *ngIf="usuarioForm.get('tipo_usuario')?.value === 'estudiante_conductor'" formControlName="capacidad_auto" type="number" label="Capacidad del auto" labelPlacement="stacked" fill="outline"></ion-input>
-          <br>
-
-          <ion-button expand="full" color="success" type="submit">Guardar cambios</ion-button>
-        </form>
-      </ion-card-content>
-    </ion-card>
-    -->
-    
   </div>
 </ion-content>
