@@ -6,6 +6,7 @@ import * as leaflet from 'leaflet';
 import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
 import { JsonPipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-viaje',
@@ -27,7 +28,7 @@ export class ViajePage implements OnInit {
   distanciaMetros: number = 0;
   tiempoSegundos: number = 0;
 
-  constructor(private viajeService: ViajeService) { }
+  constructor(private viajeService: ViajeService, private router: Router) { }
 
   ngOnInit() {
     this.initMapa();
@@ -93,8 +94,49 @@ export class ViajePage implements OnInit {
   }
   
   unirme(viaje: any) {
-    // Acción para el botón 'Unirme' (Aún sin implementar)
+    // Rescatar el usuario en sesión desde localStorage
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const rutUsuario = usuario.rut;
+  
+    // Verificar si el usuario ya está asociado a algún viaje en la lista de viajes
+    const yaAsociado = this.viajes.some(v =>
+      v.estudiante_conductor === rutUsuario || (v.pasajeros && v.pasajeros.includes(rutUsuario))
+    );
+  
+    if (yaAsociado) {
+      // El usuario ya está asociado a otro viaje, no puede unirse a este
+      console.log('No puedes unirte a este viaje porque ya estás asociado a otro viaje.');
+      return;
+    }
+  
+    // Verificar si el rut del usuario ya está asociado a este viaje
+    const esConductor = viaje.estudiante_conductor === rutUsuario;
+    const esPasajero = viaje.pasajeros && viaje.pasajeros.includes(rutUsuario);
+  
+    if (esConductor || esPasajero) {
+      // El usuario ya está asociado a este viaje
+      console.log('No puedes unirte a este viaje porque ya estás asociado.');
+      return;
+    }
+  
+    // Si no está asociado, realizar la acción para unirse al viaje
     console.log('Unirse al viaje', viaje);
+  
+    // Lógica adicional para agregar el rut del usuario al campo pasajeros
+    if (!viaje.pasajeros) {
+      viaje.pasajeros = [];
+    }
+    viaje.pasajeros.push(rutUsuario);
+  
+    // Actualizar el viaje en el servicio
+    this.viajeService.updateViaje(viaje.id, viaje).then(() => {
+      console.log('Te has unido al viaje exitosamente.');
+      
+      // Redirigir a la página /home/mapa después de unirse
+      this.router.navigate(['/home/mapa']);
+    }).catch((error) => {
+      console.log('Error al unirse al viaje:', error);
+    });
   }
 
   // Obtener viajes desde Storage

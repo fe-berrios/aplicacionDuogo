@@ -40,7 +40,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/error404/error404.module').then( m => m.Error404PageModule)
     // Este path siempre debe estar al final del json, debido que se recorre el json path por path.
   },
-
 ];
 
 @NgModule({

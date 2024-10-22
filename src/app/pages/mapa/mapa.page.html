@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mapa</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Mensaje de viaje pendiente -->
+  <div *ngIf="tieneViajePendiente" class="viaje-pendiente">
+    <ion-card>
+      <ion-card-content>
+        Tienes un viaje pendiente
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Mapa -->
+  <div id="map_map"></div>
+</ion-content>

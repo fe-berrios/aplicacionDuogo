@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from 'src/app/services/usuario.service';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-perfil',
@@ -10,7 +11,7 @@ import { UsuarioService } from 'src/app/services/usuario.service';
 export class PerfilPage implements OnInit {
   usuario: any; // Declaramos la propiedad 'usuario'
 
-  constructor() { }
+  constructor(private navController: NavController) { }
 
   ngOnInit() {
     const usuarioSesion = localStorage.getItem('usuario');
@@ -18,5 +19,10 @@ export class PerfilPage implements OnInit {
     if (usuarioSesion) {
       this.usuario = JSON.parse(usuarioSesion); // Guardamos los datos en la propiedad 'usuario'
     }
+  }
+
+  logout(){
+    localStorage.removeItem('usuario');
+    this.navController.navigateRoot('/login')
   }
 }

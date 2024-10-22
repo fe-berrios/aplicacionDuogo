@@ -8,20 +8,29 @@ const routes: Routes = [
     component: HomePage,
     children: [
       {
+        path: '',
+        redirectTo: 'mapa',  // Redirecciona automáticamente a 'mapa'
+        pathMatch: 'full'
+      },
+      {
         path: 'perfil',
-        loadChildren: () => import('../perfil/perfil.module').then( m => m.PerfilPageModule)
+        loadChildren: () => import('../perfil/perfil.module').then(m => m.PerfilPageModule)
       },
       {
         path: 'historial',
-        loadChildren: () => import('../historial/historial.module').then( m => m.HistorialPageModule)
+        loadChildren: () => import('../historial/historial.module').then(m => m.HistorialPageModule)
       },
       {
         path: 'viaje',
-        loadChildren: () => import('../viaje/viaje.module').then( m => m.ViajePageModule)
+        loadChildren: () => import('../viaje/viaje.module').then(m => m.ViajePageModule)
       },
       {
         path: 'administrar',
-        loadChildren: () => import('../administrar/administrar.module').then( m => m.AdministrarPageModule)
+        loadChildren: () => import('../administrar/administrar.module').then(m => m.AdministrarPageModule)
+      },
+      {
+        path: 'mapa',
+        loadChildren: () => import('../mapa/mapa.module').then(m => m.MapaPageModule)
       },
     ]
   }

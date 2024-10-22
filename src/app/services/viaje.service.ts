@@ -25,7 +25,7 @@ export class ViajeService {
     // Cada storage puede tener muchas llaves, que funciona como 'tablas'. Cada llave una 'tabla'.
     let viajes: any[] = await this.storage.get("viajes") || [];
     // Itera usu por usu buscando el atributo .rut que calze con usuario.rut (Variable del método.)
-    if (viajes.find(via => via.rut == viaje.rut) != undefined){
+    if (viajes.find(via => via.id == viaje.id) != undefined){
       // Si usuario NO es 'undefined' osea que SI existe, entonces:
       return false;
     }

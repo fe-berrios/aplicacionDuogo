@@ -1,0 +1,33 @@
+#map_map {
+    height: 100%;  /* Cambia la altura al 100% del contenedor */
+    width: 100%;
+    position: absolute; /* Asegura que ocupe todo el espacio */
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  
+  ion-content {
+    position: relative;
+  }
+
+  html, body, ion-content {
+    height: 100%;
+  }
+
+  .viaje-pendiente {
+    position: absolute;
+    top: 10px; /* Espaciado desde el toolbar */
+    left: 10px; /* Espaciado desde la izquierda */
+    z-index: 1000; /* Asegura que esté sobre el mapa */
+  }
+  
+  ion-card {
+    width: auto;
+    max-width: 300px; /* Ancho máximo del card */
+  }
+
+  .leaflet-container {
+    color: #000000;
+  }
