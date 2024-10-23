@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 export class ViajePage implements OnInit {
 
   viajes: any[] = [];
+  tipoUsuario: string = '';
 
   // Leaflet (mapa)
   private map: leaflet.Map | undefined;
@@ -33,6 +34,7 @@ export class ViajePage implements OnInit {
   ngOnInit() {
     this.initMapa();
     this.getViajes();
+    this.getTipoUsuario();
   }
 
   initMapa(){
@@ -142,6 +144,11 @@ export class ViajePage implements OnInit {
   // Obtener viajes desde Storage
   async getViajes(){
     this.viajes = await this.viajeService.getViajes(); 
+  }
+
+  getTipoUsuario() {
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    this.tipoUsuario = usuario.tipo_usuario; // Asignamos el tipo de usuario
   }
 
 }

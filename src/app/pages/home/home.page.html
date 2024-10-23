@@ -12,5 +12,11 @@
       <ion-icon name="person-circle-outline"></ion-icon>
       Perfil
     </ion-tab-button>
+
+    <!-- Cuarto tab, visible solo si el usuario es 'administrador' -->
+    <ion-tab-button *ngIf="usuario?.tipo_usuario === 'administrador'" tab="administrar">
+      <ion-icon name="settings-outline"></ion-icon>
+      Admin
+    </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

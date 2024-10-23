@@ -7,26 +7,58 @@ import { Storage } from '@ionic/storage-angular';
 export class UsuarioService {
 
   constructor(private storage: Storage) {
-    // Este comando crea la base de datos.
+    // Este comando crea la base de datos y asegura que el administrador existe.
     this.initStorage();
   }
 
   // async, le avisa al método que DEBE de esperar.
-   async initStorage(){
-    // await, espera que el comando se ejecute.
+  async initStorage() {
+    // Crear la base de datos.
     await this.storage.create();
+
+    // Asegurar que el usuario administrador existe.
+    await this.ensureAdminUser();
   }
 
-  // DAO (Data Access Object)
-  // Su propósito principal es abstraer y encapsular el acceso
-  // a los datos, separando la lógica de persistencia de datos de la lógica de negocio.
-  // SIEMPRE un método asincronico debe PROMETER devolver.
-  public async createUsuario(usuario:any): Promise<boolean>{
-    // Cada storage puede tener muchas llaves, que funciona como 'tablas'. Cada llave una 'tabla'.
+  // Método para asegurar que siempre exista un usuario 'administrador'
+  private async ensureAdminUser() {
+    // Obtener la lista de usuarios
     let usuarios: any[] = await this.storage.get("usuarios") || [];
-    // Itera usu por usu buscando el atributo .rut que calze con usuario.rut (Variable del método.)
-    if (usuarios.find(usu => usu.rut == usuario.rut) != undefined){
-      // Si usuario NO es 'undefined' osea que SI existe, entonces:
+
+    // Verificar si el usuario 'administrador' ya existe
+    const adminExists = usuarios.find(usu => usu.tipo_usuario === 'administrador');
+
+    // Si no existe, crearlo
+    if (!adminExists) {
+      const admin = {
+        rut: '10200300-4',  // Puedes cambiar este rut por el que desees.
+        nombre: 'Admin',
+        apellido: 'Istrador',
+        genero: 'Masculino',
+        correo: 'admin@duocuc.cl',
+        telefono: '930199330',
+        contrasena: 'admin',
+        contrasena_confirmar: 'admin',
+        tipo_usuario: 'administrador',
+        nombre_auto: '',
+        capacidad_auto: '',
+        esConductor: false
+      };
+
+      // Agregar el administrador a la lista de usuarios y guardarlo en Storage
+      usuarios.push(admin);
+      await this.storage.set("usuarios", usuarios);
+
+      console.log('Usuario administrador creado');
+    } else {
+      console.log('Usuario administrador ya existe');
+    }
+  }
+
+  // DAO (Data Access Object) - Métodos ya implementados
+  public async createUsuario(usuario: any): Promise<boolean> {
+    let usuarios: any[] = await this.storage.get("usuarios") || [];
+    if (usuarios.find(usu => usu.rut == usuario.rut) != undefined) {
       return false;
     }
     usuarios.push(usuario);
@@ -34,26 +66,20 @@ export class UsuarioService {
     return true;
   }
 
-  public async getUsuario(rut:string): Promise<any>{
+  public async getUsuario(rut: string): Promise<any> {
     let usuarios: any[] = await this.storage.get("usuarios") || [];
     return usuarios.find(usu => usu.rut == rut);
   }
 
-  // Especifica que devuelve una lista[] de algo 'any'
-  public async getUsuarios(): Promise<any[]>{
+  public async getUsuarios(): Promise<any[]> {
     let usuarios: any[] = await this.storage.get("usuarios") || [];
     return usuarios;
   }
 
-  // Método debe ser siempre 'async' cuando se trabaja con await!
-  // Un método async ya que esta 'asincronico' debe devolver una 'promesa' de algo.
-  public async updateUsuario(rut:string, nuevoUsuario:any): Promise<boolean>{
-    // Ya que se trabaja con 'storage' se utiliza el await. ESTO SE HACE SIEMPRE.
-    // Se crea una variable que almacena el storage.
+  public async updateUsuario(rut: string, nuevoUsuario: any): Promise<boolean> {
     let usuarios: any[] = await this.storage.get("usuarios") || [];
-    // Se almacena el index de la lista que creamos anteriormente que rescataba el storage.
     let index: number = usuarios.findIndex(usu => usu.rut == rut);
-    if (index == -1){
+    if (index == -1) {
       return false;
     }
     usuarios[index] = nuevoUsuario;
@@ -61,10 +87,10 @@ export class UsuarioService {
     return true;
   }
 
-  public async deleteUsuario(rut:string): Promise<boolean>{
+  public async deleteUsuario(rut: string): Promise<boolean> {
     let usuarios: any[] = await this.storage.get("usuarios") || [];
     let index: number = usuarios.findIndex(usu => usu.rut == rut);
-    if (index == -1){
+    if (index == -1) {
       return false;
     }
     usuarios.splice(index, 1);
@@ -72,22 +98,18 @@ export class UsuarioService {
     return true;
   }
 
-  public async authUsuario (rut: string, contrasena: string): Promise<any>{
+  public async authUsuario(rut: string, contrasena: string): Promise<any> {
     let usuarios: any[] = await this.storage.get("usuarios") || [];
     const usuarioAuth = usuarios.find(usu => usu.rut == rut && usu.contrasena == contrasena);
-    // Si encontro algo:
-    if (usuarioAuth){
-      // Se guarda en localStorage (para obtener el usuario en sesión) y se debe cambiar a string ya que...
-      // localStorage almacena la información solo si es string.
-      // la 'key' es solo "usuario" ya que estamos rescatando solo 1 usuario
+    if (usuarioAuth) {
       localStorage.setItem("usuario", JSON.stringify(usuarioAuth));
       return true;
     }
     return false;
   }
 
-  public async recoverUsuario(correo: string): Promise<any>{
-    let usuarios: any[] = await this.storage.get("usuarios") || []
+  public async recoverUsuario(correo: string): Promise<any> {
+    let usuarios: any[] = await this.storage.get("usuarios") || [];
     return usuarios.find(usu => usu.correo == correo);
   }
 }

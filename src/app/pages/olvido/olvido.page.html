@@ -12,16 +12,18 @@
     <ion-card-content>
       <ion-item>
         <ion-label position="stacked">Ingrese correo registrado</ion-label>
-        <ion-input color="primary" type="email" placeholder="ejemplo@duocuc.cl"></ion-input>
+        <ion-input #emailInput color="primary" type="email" placeholder="ejemplo@duocuc.cl"></ion-input>
       </ion-item>
       <br>
-      <ion-item>
-        <ion-label position="stacked">Confirme correo</ion-label>
-        <ion-input color="primary" type="email" placeholder="ejemplo@duocuc.cl"></ion-input>
-      </ion-item>
-      <br>
-      <ion-button id="open-loading" color="warning" expand="full" fill="outline" shape="round" (click)="cambiarPagina()">Enviar código de recuperación</ion-button>
-      <ion-loading trigger="open-loading" message="Si el correo esta asociado a alguna cuenta DuoGO, le enviaremos un código de 6 dígitos" duration="3000"></ion-loading>
+      <ion-button color="warning" expand="full" fill="outline" shape="round"
+                  (click)="validarCorreo(emailInput.value)">
+        Enviar código de recuperación
+      </ion-button>
+      
+      <!-- Mostrar mensaje de error si existe -->
+      <ion-text *ngIf="mensaje" color="danger">
+        {{ mensaje }}
+      </ion-text>
     </ion-card-content>
   </ion-card>
 </ion-content>

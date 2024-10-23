@@ -10,23 +10,23 @@
 <ion-content [fullscreen]="true">
   <ion-card>
     <ion-card-content>
-      <ion-item>
-        <ion-label position="stacked">Ingrese Código</ion-label>
-        <ion-input color="primary" type="text" placeholder="Ingrese código de 6 dígitos"></ion-input>
-      </ion-item>
       <br>
       <ion-item>
         <ion-label position="stacked">Nueva Contraseña</ion-label>
-        <ion-input color="primary" type="password" placeholder="Ingrese nueva contraseña"></ion-input>
+        <ion-input [(ngModel)]="nuevaContrasena" color="primary" type="password" placeholder="Ingrese nueva contraseña"></ion-input>
       </ion-item>
       <br>
       <ion-item>
         <ion-label position="stacked">Confirmación</ion-label>
-        <ion-input color="primary" type="password" placeholder="Confirme contraseña"></ion-input>
+        <ion-input [(ngModel)]="confirmarContrasena" color="primary" type="password" placeholder="Confirme contraseña"></ion-input>
       </ion-item>
       <br>
-      <ion-button id="open-loading" color="warning" expand="full" fill="outline" shape="round" (click)="cambiarPagina()">Iniciar Sesión</ion-button>
-      <ion-loading trigger="open-loading" message="Se enviará un correo de confirmación con '¡Clave cambiada con éxito!'" duration="3000"></ion-loading>
+      <ion-button color="warning" expand="full" fill="outline" shape="round" (click)="cambiarContrasena()">Cambiar Contraseña</ion-button>
+
+      <!-- Mensaje de éxito o error -->
+      <ion-text *ngIf="mensaje" color="danger">
+        {{ mensaje }}
+      </ion-text>
     </ion-card-content>
   </ion-card>
 </ion-content>

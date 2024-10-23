@@ -8,20 +8,63 @@
   <div class="center-content">
     <img src="../../../assets/img/icon_user.png" alt="Profile Picture" class="profile-img">
 
-  <ion-card *ngIf="usuario">
-    <ion-card-header>
-    <ion-card-title>{{ usuario.nombre }}</ion-card-title> <!-- Muestra el nombre del usuario -->
-    <ion-card-subtitle>RUT: {{ usuario.rut }}</ion-card-subtitle> <!-- Muestra el ID del usuario -->
-    </ion-card-header>
+    <!-- Muestra los datos del usuario si no está editando -->
+    <ion-card *ngIf="!isEditing && usuario">
+      <ion-card-header>
+        <ion-card-title>{{ usuario.get('nombre')?.value }}</ion-card-title>
+        <ion-card-subtitle>RUT: {{ usuario.get('rut')?.value }}</ion-card-subtitle>
+        <ion-card-subtitle>{{ formatTipoUsuario(usuario.get('tipo_usuario')?.value || '') }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Email: {{ usuario.get('correo')?.value }}</p>
+        <p>Teléfono: {{ usuario.get('telefono')?.value }}</p>
+      </ion-card-content>
+    </ion-card>
 
-    <ion-card-content>
-    <p>Email: {{ usuario.correo }}</p> <!-- Muestra el email del usuario -->
-    <p>Teléfono: {{ usuario.telefono }}</p> <!-- Muestra el teléfono del usuario -->
-    <!-- Agrega más campos según los datos que tengas en el objeto usuario -->
-    </ion-card-content>
-  </ion-card>
+    <!-- Botón para modificar perfil -->
+    <ion-button expand="block" *ngIf="!isEditing" (click)="toggleEdit()">MODIFICAR PERFIL</ion-button>
 
-  <ion-button>HISTORIAL DE VIAJES</ion-button>
-  <ion-button (click)="logout()">CERRAR SESION</ion-button>
+    <!-- Formulario de edición dentro de un card -->
+    <ion-card *ngIf="isEditing">
+      <ion-card-header>
+        <ion-card-title>Modificar Perfil</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <form [formGroup]="usuario">
+          <!-- Solo permite editar el teléfono -->
+          <ion-item>
+            <ion-label position="floating">Teléfono</ion-label>
+            <ion-input formControlName="telefono"></ion-input>
+          </ion-item>
+
+          <!-- Permitir modificar tipo de usuario (solo entre 'estudiante' y 'estudiante_conductor') -->
+          <ion-item>
+            <ion-label position="floating">Tipo de Usuario</ion-label>
+            <ion-select formControlName="tipo_usuario">
+              <ion-select-option value="estudiante">Estudiante</ion-select-option>
+              <ion-select-option value="estudiante_conductor">Estudiante Conductor</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Mostrar y habilitar estos campos solo si el tipo de usuario es 'estudiante_conductor' -->
+          <ion-item *ngIf="usuario.get('tipo_usuario')?.value === 'estudiante_conductor'">
+            <ion-label position="floating">Nombre del Auto</ion-label>
+            <ion-input formControlName="nombre_auto"></ion-input>
+          </ion-item>
+
+          <ion-item *ngIf="usuario.get('tipo_usuario')?.value === 'estudiante_conductor'">
+            <ion-label position="floating">Capacidad del Auto</ion-label>
+            <ion-input formControlName="capacidad_auto"></ion-input>
+          </ion-item>
+
+          <ion-button expand="block" (click)="guardarCambios()">GUARDAR CAMBIOS</ion-button>
+          <ion-button expand="block" color="medium" (click)="cancelEdit()">CANCELAR</ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Botones generales -->
+    <ion-button expand="block" *ngIf="!isEditing" [routerLink]="['/home/historial']">HISTORIAL DE VIAJES</ion-button>
+    <ion-button expand="block" *ngIf="!isEditing" (click)="logout()">CERRAR SESION</ion-button>
   </div>
 </ion-content>

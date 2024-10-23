@@ -4,81 +4,86 @@
   </ion-toolbar>
 </ion-header>
 
-<!-- Contenido de la página -->
 <ion-content class="ion-padding">
-  <!-- Formulario CRUD usuario/persona -->
-  <ion-card>
-    <form [formGroup]="persona" (ngSubmit)="createUsuario()" style="padding: 10px;">
-      <!-- Atributos de la persona -->
-      <ion-input formControlName="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline" helperText="Sin puntos y con guión."></ion-input>
-      <br>
-      <ion-input formControlName="nombre" type="text" label="Nombre" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
-      <br>
-      <ion-input formControlName="apellido" type="text" label="Apellido" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
 
-      <br>
-      <ion-list>
-        <ion-label>Género</ion-label>
-        <ion-radio-group formControlName="genero" (ionChange)="handleChange($event)">
-          <ion-item>
-            <ion-label>Masculino</ion-label>
-            <ion-radio slot="start" value="Masculino"></ion-radio>
-          </ion-item>
-          <ion-item>
-            <ion-label>Femenino</ion-label>
-            <ion-radio slot="start" value="Femenino"></ion-radio>
-          </ion-item>
-          <ion-item>
-            <ion-label>Otro</ion-label>
-            <ion-radio slot="start" value="Otro"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
-      </ion-list>
-      <br>
+  <!-- Botones para alternar entre administración de usuarios y viajes -->
+  <div style="display: flex; justify-content: space-around; margin-bottom: 20px;">
+    <ion-button (click)="mostrarUsuarios()">Administrar Usuarios</ion-button>
+    <ion-button (click)="mostrarViajes()">Administrar Viajes</ion-button>
+  </div>
 
-      <ion-input formControlName="telefono" type="text" label="Teléfono" labelPlacement="stacked" fill="outline" helperText="9 dígitos. Solo números."></ion-input>
-      <br>
-      <ion-input formControlName="correo" type="email" label="Correo" labelPlacement="stacked" fill="outline" helperText="Debe ser un correo institucional (@duocuc.cl)"></ion-input>
-      <br>
+  <!-- Formulario y lista para administrar usuarios -->
+  <div *ngIf="modoAdministracion === 'usuarios'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Administrar Usuarios</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <form [formGroup]="persona" (ngSubmit)="createUsuario()">
+          <ion-input formControlName="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline"></ion-input>
+          <ion-input formControlName="nombre" type="text" label="Nombre" labelPlacement="stacked" fill="outline"></ion-input>
+          <ion-input formControlName="apellido" type="text" label="Apellido" labelPlacement="stacked" fill="outline"></ion-input>
+          <ion-input formControlName="correo" type="email" label="Correo" labelPlacement="stacked" fill="outline"></ion-input>
+          <ion-input formControlName="telefono" type="text" label="Teléfono" labelPlacement="stacked" fill="outline"></ion-input>
+          <ion-input *ngIf="persona.controls.esConductor.value" formControlName="nombre_auto" type="text" label="Marca de auto" labelPlacement="stacked" fill="outline"></ion-input>
+          <ion-input *ngIf="persona.controls.esConductor.value" formControlName="capacidad_auto" type="number" label="Capacidad de auto" labelPlacement="stacked" fill="outline"></ion-input>
+          
+          <ion-button expand="block" color="success" [disabled]="persona.invalid" type="submit">REGISTRAR</ion-button>
+          <ion-button expand="block" color="warning" (click)="updateUsuario()">MODIFICAR</ion-button>
+          <ion-button expand="block" color="medium" type="reset">LIMPIAR</ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
 
-      <ion-item>
-        <ion-checkbox formControlName="esConductor" (ionChange)="onCheckboxChange($event.detail.checked)" slot="start"></ion-checkbox>
-        <ion-label>Eres conductor?</ion-label>
+    <!-- Lista de usuarios -->
+    <ion-list *ngFor="let usuario of usuarios">
+      <ion-item (click)="usuarioDrop(usuario.rut)">
+        <ion-icon name="person-circle-outline"></ion-icon>
+        {{ usuario.nombre }} {{ usuario.apellido }} ({{ usuario.tipo_usuario }})
       </ion-item>
+      <div *ngIf="usuarioVisible === usuario.rut">
+        <p><strong>RUT:</strong> {{ usuario.rut }}</p>
+        <p><strong>Genero:</strong> {{ usuario.genero }}</p>
+        <p><strong>Correo:</strong> {{ usuario.correo }}</p>
+        <p><strong>Telefono:</strong> {{ usuario.telefono }}</p>
+        <ion-button (click)="getUsuario(usuario.rut)" color="warning">BUSCAR</ion-button>
+        <ion-button (click)="deleteUsuario(usuario.rut)" color="danger">ELIMINAR</ion-button>
+      </div>
+    </ion-list>
+  </div>
 
-      <br>
-      <ion-input *ngIf="persona.controls.esConductor.value" formControlName="nombre_auto" type="text" label="Marca de auto" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
-      <br>
-      <ion-input *ngIf="persona.controls.esConductor.value" formControlName="capacidad_auto" type="number" label="Capacidad de auto" labelPlacement="stacked" fill="outline" helperText="Solo números. Minimo 2."></ion-input>
-      <br>
-      <ion-input formControlName="contrasena" type="password" label="Contraseña" labelPlacement="stacked" fill="outline" helperText="Mínimo de 2 caracteres."></ion-input>
-      <br>
-      <ion-input formControlName="contrasena_confirmar" type="password" label="Confirmar Contraseña" labelPlacement="stacked" fill="outline" helperText="Debe ser igual a la contraseña anterior."></ion-input>
-      <br>   
+  <!-- Formulario y lista para administrar viajes -->
+  <div *ngIf="modoAdministracion === 'viajes'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Administrar Viajes</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <form [formGroup]="viaje" (ngSubmit)="createViaje()">
+          <ion-input formControlName="id" type="number" label="ID del Viaje" labelPlacement="stacked" fill="outline"></ion-input>
+          <ion-input formControlName="nombre_destino" type="text" label="Destino" labelPlacement="stacked" fill="outline"></ion-input>
+          <ion-input formControlName="precio" type="number" label="Precio" labelPlacement="stacked" fill="outline"></ion-input>
 
-      <ion-button id="present-alert" [disabled]="persona.invalid" type="submit" size="block" color="success">REGISTRAR</ion-button> 
-      <ion-button (click)="updateUsuario()" size="block" color="warning">MODIFICAR</ion-button>
-      <ion-button type="reset" size="block" color="medium">LIMPIAR</ion-button>
-    </form>
-  </ion-card>
+          <ion-button expand="block" color="success" [disabled]="viaje.invalid" type="submit">REGISTRAR</ion-button>
+          <ion-button expand="block" color="warning" (click)="updateViaje()">MODIFICAR</ion-button>
+          <ion-button expand="block" color="medium" type="reset">LIMPIAR</ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
 
-  <!-- *ngFor que itera en la lista de usuarios -->
-  <ion-list *ngFor="let usuario of usuarios">
-    <!-- Item principal que se muestra en la lista -->
-    <ion-item (click)="usuarioDrop(usuario.rut)">
-      <ion-icon name="person-circle-outline"></ion-icon>
-      <h5 style="padding-left: 10px;">{{ usuario.nombre }} {{usuario.apellido}}</h5>
-    </ion-item>
-  
-    <!-- Dropdown con los detalles del usuario, visible solo al hacer clic -->
-    <div *ngIf="usuarioVisible === usuario.rut" class="dropdown">
-      <ion-label><strong>RUT:</strong> {{ usuario.rut }}</ion-label><br>
-      <ion-label><strong>Correo:</strong> {{ usuario.correo }}</ion-label><br>
-      <ion-label><strong>Tipo de usuario:</strong> {{ usuario.tipo_usuario }}</ion-label><br>
-  
-      <!-- Botones dentro del dropdown -->
-      <ion-button (click)="getUsuario(usuario.rut)" color="warning">BUSCAR</ion-button>
-      <ion-button (click)="deleteUsuario(usuario.rut)" color="danger">ELIMINAR</ion-button>
-    </div>
-  </ion-list>
+    <!-- Lista de viajes -->
+    <ion-list *ngFor="let viaje of viajes">
+      <ion-item (click)="viajeDrop(viaje.id)">
+        <ion-icon name="car-outline"></ion-icon>
+        ({{ viaje.id }}) Viaje creado por {{ viaje.estudiante_conductor }}
+      </ion-item>
+      <div *ngIf="viajeVisible === viaje.id">
+        <p><strong>Conductor:</strong> {{ viaje.estudiante_conductor }}</p>
+        <p><strong>Pasajeros:</strong> {{ viaje.pasajeros }}</p>
+        <ion-button (click)="getViaje(viaje.id)" color="warning">BUSCAR</ion-button>
+        <ion-button (click)="deleteViaje(viaje.id)" color="danger">ELIMINAR</ion-button>
+      </div>
+    </ion-list>
+  </div>
+
 </ion-content>

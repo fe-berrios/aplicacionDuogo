@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from 'src/app/services/usuario.service';
+import { ViajeService } from 'src/app/services/viaje.service';
 
 @Component({
   selector: 'app-administrar',
@@ -9,9 +10,14 @@ import { UsuarioService } from 'src/app/services/usuario.service';
 })
 export class AdministrarPage implements OnInit {
 
+  modoAdministracion: string = 'usuarios'; // Modo inicial: Administrar usuarios
   usuarioVisible: string | null = null;
-  usuarios:any[] = [];
+  viajeVisible: number | null = null;
 
+  usuarios: any[] = [];
+  viajes: any[] = [];
+
+  // Formulario de Usuarios
   persona = new FormGroup({
     rut: new FormControl('', [
       Validators.pattern("[0-9]{7,8}-[0-9kK]{1}"),
@@ -58,76 +64,132 @@ export class AdministrarPage implements OnInit {
     esConductor: new FormControl(false) // Control para el checkbox
   });
 
-  // El servicio (en 'services') nos permite trabajar la información: 
-  // Se importa el DAO creado en 'services/usuario.service.ts'
-  constructor(private usuarioService: UsuarioService) { }
+  // Formulario de Viajes
+  viaje = new FormGroup({
+    id: new FormControl(''),
+    estudiante_conductor: new FormControl(''),
+    asientos_disponibles: new FormControl('', [Validators.required]),
+    nombre_destino: new FormControl(''),
+    latitud: new FormControl(''),
+    longitud: new FormControl(''),
+    distancia_metros: new FormControl(''),
+    tiempo_segundos: new FormControl(''),
+    forma_pago: new FormControl('', [Validators.required]),
+    estado_viaje: new FormControl(''),
+    pasajeros: new FormControl('')
+  });
 
-  // ngOnInit es una funcion que funciona apenas carga la página
+  constructor(private usuarioService: UsuarioService, private viajeService: ViajeService) { }
+
   async ngOnInit() {
-    // Apenas cargue la página guarda los usuarios del 'service' en la lista usuarios en la variable definida acá.
+    // Cargar los usuarios al iniciar
     this.usuarios = await this.usuarioService.getUsuarios();
   }
-  
-  //CRUD
-  async createUsuario(){
-    // Se accede al objeto (this.usuarioService) y se accede al método (.createUsuario)
-    // y se le da el objeto 'persona' al método.
-    if(await this.usuarioService.createUsuario(this.persona.value)){
-      alert("Usuario creado con éxito!")
-      // .reset limpia el formulario.
-      this.persona.reset()
+
+  // Mostrar Usuarios
+  mostrarUsuarios() {
+    this.modoAdministracion = 'usuarios';
+  }
+
+  // Mostrar Viajes y cargar lista de viajes
+  async mostrarViajes() {
+    this.modoAdministracion = 'viajes';
+    this.viajes = await this.viajeService.getViajes(); // Cargar la lista de viajes
+  }
+
+  // CRUD Usuarios
+  async createUsuario() {
+    if (await this.usuarioService.createUsuario(this.persona.value)) {
+      alert('Usuario creado con éxito!');
+      this.persona.reset();
     } else {
-      alert("Error! No se pudo crear el usuario.")
+      alert('Error al crear usuario.');
     }
   }
 
-  async getUsuario(rut: string){
-    // Se le asigna valor a 'persona' (this.persona.setValue)
-    // y se rescatan los datos del usuario (this.usuarioService.getUsuario(rut));
-    this.persona.setValue(await this.usuarioService.getUsuario(rut));
-  }
-
-  async updateUsuario(){
-    // Se crea una variable ya que ionic no permite que potencialmente NO encuentre algun rut
-    // entonces en esta variable le asignamos el valor del rut o (||) un string vacio ("");
-    var rut_buscar: string= this.persona.controls.rut.value || "";
-    // Se llama al servicio, se accede al método,
-    // se utiliza la variable (this.persona.controls.rut.value) y
-    // se utiliza la persona (this.persona.value)
-    if (await this.usuarioService.updateUsuario(rut_buscar, this.persona.value)){
-      alert("Usuario modificado con éxito!")
+  async updateUsuario() {
+    const rut = this.persona.controls.rut.value || '';
+    if (await this.usuarioService.updateUsuario(rut, this.persona.value)) {
+      alert('Usuario actualizado con éxito!');
     } else {
-      alert("ERROR! Usuario no modificado.")
+      alert('Error al actualizar usuario.');
     }
   }
 
-  async deleteUsuario(rut: string){
-    // Se llama al método del Service "deleteUsuario" para eliminar el usuario
-    // Se le entrega la variable de 'rut' que rescatamos del *ngFor de los usuarios.
-    if(await this.usuarioService.deleteUsuario(rut)){
-      // Se DEBE agregar una alerta de '¿Estas seguro quieres eliminar al usuario?'
-      alert("Usuario eliminado con éxito!")
-    }else{
-      alert("ERROR! Usuario no ha sido eliminado")
+  async deleteUsuario(rut: string) {
+    if (await this.usuarioService.deleteUsuario(rut)) {
+      alert('Usuario eliminado con éxito!');
+    } else {
+      alert('Error al eliminar usuario.');
     }
   }
 
-  // Dropdown
-  usuarioDrop(rut: string){
-    this.usuarioVisible = this.usuarioVisible === rut ? null: rut;
+  // Obtener un usuario específico para editarlo
+  async getUsuario(rut: string) {
+    const usuario = await this.usuarioService.getUsuario(rut);
+    if (usuario) {
+      this.persona.setValue(usuario);
+    } else {
+      alert('Usuario no encontrado');
+    }
   }
 
+  usuarioDrop(rut: string) {
+    this.usuarioVisible = this.usuarioVisible === rut ? null : rut;
+  }
+
+  // CRUD Viajes
+  async createViaje() {
+    if (await this.viajeService.createViaje(this.viaje.value)) {
+      alert('Viaje creado con éxito!');
+      this.viaje.reset();
+    } else {
+      alert('Error al crear viaje.');
+    }
+  }
+
+  async updateViaje() {
+    const id = Number(this.viaje.controls.id.value) || 0; // Convertir a número
+    if (await this.viajeService.updateViaje(id, this.viaje.value)) {
+      alert('Viaje actualizado con éxito!');
+    } else {
+      alert('Error al actualizar viaje.');
+    }
+  }
+
+  async deleteViaje(id: number) {
+    if (await this.viajeService.deleteViaje(id)) {
+      alert('Viaje eliminado con éxito!');
+    } else {
+      alert('Error al eliminar viaje.');
+    }
+  }
+
+  // Obtener un viaje específico para editarlo
+  async getViaje(id: number) {
+    const viaje = await this.viajeService.getViaje(id);
+    if (viaje) {
+      this.viaje.setValue(viaje);
+    } else {
+      alert('Viaje no encontrado');
+    }
+  }
+
+  viajeDrop(id: number) {
+    this.viajeVisible = this.viajeVisible === id ? null : id;
+  }
+
+  // Validar contraseñas en el formulario de usuario
   static validarContrasenas(control: FormControl): { [key: string]: boolean } | null {
     const contrasena = control.parent?.get('contrasena')?.value;
     return control.value === contrasena ? null : { noCoinciden: true };
   }
 
-  // Función para manejar el cambio del checkbox
   onCheckboxChange(isChecked: boolean) {
     this.persona.controls.tipo_usuario.setValue(isChecked ? 'estudiante_conductor' : 'estudiante');
   }
 
   handleChange(ev: CustomEvent) {
     console.log('Género seleccionado:', ev.detail.value);
-}
+  }
 }

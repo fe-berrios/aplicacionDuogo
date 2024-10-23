@@ -15,7 +15,6 @@ import { JsonPipe } from '@angular/common';
   styleUrls: ['./crear-viaje.page.scss'],
 })
 export class CrearViajePage implements OnInit {
-
   // Leaflet (mapa)
   private map: leaflet.Map | undefined;
   private geocoder: geo.Geocoder | undefined;

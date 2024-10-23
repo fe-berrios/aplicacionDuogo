@@ -12,9 +12,18 @@
   <br>
 
   <!-- Botón para crear un viaje -->
-  <ion-button expand="full" [routerLink]="['/crear-viaje']">
+  <ion-button *ngIf="tipoUsuario === 'estudiante_conductor'" expand="full" [routerLink]="['/crear-viaje']">
     Crear Viaje
   </ion-button>
+
+  <!-- Si no hay viajes, mostrar una tarjeta con un mensaje -->
+  <ion-card *ngIf="viajes.length === 0">
+    <ion-card-content>
+      <ion-label>
+        <h2>No hay viajes disponibles.</h2>
+      </ion-label>
+    </ion-card-content>
+  </ion-card>
 
   <!-- Lista de viajes -->
   <ion-card *ngFor="let viaje of viajes">
@@ -67,6 +76,5 @@
   
     </ion-card-content>
   </ion-card>
-  
 
 </ion-content>
