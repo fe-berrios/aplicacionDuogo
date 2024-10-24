@@ -48,6 +48,12 @@ export class RegistroPage implements OnInit {
     tipo_usuario: new FormControl('estudiante', [Validators.required]), // Valor por defecto
     nombre_auto: new FormControl(''),
     capacidad_auto: new FormControl(''),
+    patente: new FormControl('', [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(6),
+      Validators.pattern('^[A-Z]{2}[0-9]{4}$|^[0-9]{4}[A-Z]{2}$')  // Patente en formato moderno o antiguo
+    ]),
     esConductor: new FormControl(false) // Control para el checkbox
   });
 

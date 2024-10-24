@@ -47,6 +47,8 @@
       <br>
 
       <!-- Campos adicionales si es conductor -->
+      <ion-input *ngIf="usuario.get('esConductor')?.value" formControlName="patente" type="text" label="Patente" labelPlacement="stacked" fill="outline" helperText="Debe ser una patente válida."></ion-input>
+      <br>
       <ion-input *ngIf="usuario.get('esConductor')?.value" formControlName="nombre_auto" type="text" label="Marca de auto" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
       <br>
       <ion-input *ngIf="usuario.get('esConductor')?.value" formControlName="capacidad_auto" type="number" label="Capacidad de auto" labelPlacement="stacked" fill="outline" helperText="Solo números, minimo 2."></ion-input>

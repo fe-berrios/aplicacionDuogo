@@ -5,7 +5,6 @@ import { ViajeService } from 'src/app/services/viaje.service';
 import * as leaflet from 'leaflet';
 import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
-import { JsonPipe } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,10 +16,13 @@ export class ViajePage implements OnInit {
 
   viajes: any[] = [];
   tipoUsuario: string = '';
+  usuario: any;
+  tieneViaje: boolean = false; // Nueva variable para verificar si ya está en un viaje
 
   // Leaflet (mapa)
   private map: leaflet.Map | undefined;
   private geocoder: geo.Geocoder | undefined;
+  private currentRouteControl: any;
 
   // Variables que rescatan informacion del mapa
   latitud: number = 0;
@@ -29,15 +31,15 @@ export class ViajePage implements OnInit {
   distanciaMetros: number = 0;
   tiempoSegundos: number = 0;
 
-  constructor(private viajeService: ViajeService, private router: Router) { }
+  constructor(private viajeService: ViajeService, private router: Router) {}
 
   ngOnInit() {
+    this.getTipoUsuario();
     this.initMapa();
     this.getViajes();
-    this.getTipoUsuario();
   }
 
-  initMapa(){
+  initMapa() {
     // 'locate' Ubicación actual utiliza TÚ ubicación de dispositivo.
     this.map = leaflet.map('map_lista').setView([-33.59838016321339, -70.57879780298838], 16);
     leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -68,87 +70,117 @@ export class ViajePage implements OnInit {
           // Obtener distancia y tiempo de la ruta
           this.distanciaMetros = e.routes[0].summary.totalDistance;
           this.tiempoSegundos = e.routes[0].summary.totalTime;
-
         }).addTo(this.map);
       }
     });
   }
 
   verRuta(viaje: any) {
-    // Coordenadas del viaje
-    const origen = leaflet.latLng(-33.59838016321339, -70.57879780298838); // Coordenadas de Puente Alto
-    const destino = leaflet.latLng(viaje.latitud, viaje.longitud); // Coordenadas del destino del viaje
-  
+    const origen = leaflet.latLng(-33.59838016321339, -70.57879780298838);
+    const destino = leaflet.latLng(viaje.latitud, viaje.longitud);
+
     if (this.map) {
-      // Limpiar rutas anteriores
-      this.map.eachLayer((layer) => {
-        if (layer instanceof leaflet.Routing.Control) {
-          this.map?.removeLayer(layer);
-        }
-      });
-  
+      // Remover la ruta actual si existe antes de agregar una nueva
+      if (this.currentRouteControl) {
+        this.map.removeControl(this.currentRouteControl);
+      }
+
       // Crear nueva ruta en el mapa
-      leaflet.Routing.control({
+      this.currentRouteControl = leaflet.Routing.control({
         waypoints: [origen, destino],
         fitSelectedRoutes: true
+      }).on('routesfound', (e) => {
+        this.distanciaMetros = e.routes[0].summary.totalDistance;
+        this.tiempoSegundos = e.routes[0].summary.totalTime;
       }).addTo(this.map);
     }
   }
-  
+
+  esPasajero(viaje: any): boolean {
+    return viaje.pasajeros && viaje.pasajeros.includes(this.usuario.rut);
+  }
+
   unirme(viaje: any) {
-    // Rescatar el usuario en sesión desde localStorage
-    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-    const rutUsuario = usuario.rut;
-  
-    // Verificar si el usuario ya está asociado a algún viaje en la lista de viajes
+    const rutUsuario = this.usuario.rut;
+
+    // Verificar si el usuario ya está asociado a algún viaje
     const yaAsociado = this.viajes.some(v =>
       v.estudiante_conductor === rutUsuario || (v.pasajeros && v.pasajeros.includes(rutUsuario))
     );
-  
+
     if (yaAsociado) {
-      // El usuario ya está asociado a otro viaje, no puede unirse a este
       console.log('No puedes unirte a este viaje porque ya estás asociado a otro viaje.');
       return;
     }
-  
-    // Verificar si el rut del usuario ya está asociado a este viaje
-    const esConductor = viaje.estudiante_conductor === rutUsuario;
-    const esPasajero = viaje.pasajeros && viaje.pasajeros.includes(rutUsuario);
-  
-    if (esConductor || esPasajero) {
-      // El usuario ya está asociado a este viaje
-      console.log('No puedes unirte a este viaje porque ya estás asociado.');
-      return;
-    }
-  
-    // Si no está asociado, realizar la acción para unirse al viaje
-    console.log('Unirse al viaje', viaje);
-  
-    // Lógica adicional para agregar el rut del usuario al campo pasajeros
+
     if (!viaje.pasajeros) {
       viaje.pasajeros = [];
     }
+
     viaje.pasajeros.push(rutUsuario);
-  
-    // Actualizar el viaje en el servicio
+    viaje.asientos_disponibles -= 1;
+
     this.viajeService.updateViaje(viaje.id, viaje).then(() => {
       console.log('Te has unido al viaje exitosamente.');
-      
-      // Redirigir a la página /home/mapa después de unirse
       this.router.navigate(['/home/mapa']);
     }).catch((error) => {
       console.log('Error al unirse al viaje:', error);
     });
   }
 
-  // Obtener viajes desde Storage
-  async getViajes(){
-    this.viajes = await this.viajeService.getViajes(); 
+  abandonar(viaje: any) {
+    const rutUsuario = this.usuario.rut;
+    const index = viaje.pasajeros.indexOf(rutUsuario);
+
+    if (index > -1) {
+      viaje.pasajeros.splice(index, 1);
+      viaje.asientos_disponibles += 1;
+
+      this.viajeService.updateViaje(viaje.id, viaje).then(() => {
+        console.log('Has abandonado el viaje exitosamente.');
+        this.getViajes();
+      }).catch((error) => {
+        console.log('Error al abandonar el viaje:', error);
+      });
+    } else {
+      console.log('No estás asociado a este viaje.');
+    }
+  }
+
+  modificarViaje(viaje: any) {
+    this.router.navigate(['/modificar-viaje'], { queryParams: { id: viaje.id } });
+  }
+
+  async cancelarViaje(viaje: any) {
+    const confirmar = confirm('¿Estás seguro de que deseas cancelar este viaje?');
+    if (confirmar) {
+      await this.viajeService.deleteViaje(viaje.id);
+      console.log('Viaje cancelado exitosamente.');
+      this.getViajes();
+    }
+  }
+
+  async getViajes() {
+    this.viajes = await this.viajeService.getViajes();
+  
+    // Verificar si el usuario ya tiene un viaje creado o está asociado como pasajero
+    const rutUsuario = this.usuario.rut;
+  
+    this.tieneViaje = this.viajes.some(viaje => 
+      viaje.estudiante_conductor === rutUsuario || (viaje.pasajeros && viaje.pasajeros.includes(rutUsuario))
+    );
+  
+    console.log('Tiene Viaje:', this.tieneViaje);  // Log para verificar
+    console.log('Tipo de Usuario:', this.tipoUsuario);  // Log para verificar
   }
 
   getTipoUsuario() {
-    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-    this.tipoUsuario = usuario.tipo_usuario; // Asignamos el tipo de usuario
+    this.usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    this.tipoUsuario = this.usuario.tipo_usuario || ''; // Asegúrate de que no quede undefined
+    console.log('Tipo de Usuario:', this.tipoUsuario);  // Log para verificar el valor
+  }
+  esConductor(viaje: any): boolean {
+    return viaje.estudiante_conductor === this.usuario.rut;
   }
 
 }

@@ -3,26 +3,25 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home/viaje"></ion-back-button> <!-- Botón de regreso -->
     </ion-buttons>
-    <ion-title>Crear Viaje</ion-title>
+    <ion-title>Modificar Viaje</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <div class="map-container">
-    <div id="map_create"></div>
+    <div id="map_modificar"></div>
   </div>
 
   <ion-card class="custom-card">
-    <form [formGroup]="viaje" (ngSubmit)="createViaje()" style="margin: 20px;">
+    <form [formGroup]="viaje" (ngSubmit)="modificarViaje()" style="margin: 20px;">
 
       <!-- Input para la patente del vehículo, solo lectura -->
       <ion-input formControlName="patente" label="Patente del vehículo" labelPlacement="stacked" fill="outline" readonly></ion-input>
-      <br>
 
+      <br>
       <!-- Input para el costo del viaje -->
       <ion-input formControlName="costo" type="number" label="Costo del viaje" labelPlacement="stacked" fill="outline" helperText="Ingrese el costo del viaje"></ion-input>
       <br>
-
       <!-- Input para el nombre del destino, solo lectura -->
       <ion-input formControlName="nombre_destino" label="Destino" labelPlacement="stacked" fill="outline" readonly></ion-input>
       <br>
@@ -40,7 +39,7 @@
       </ion-radio-group>
       <br>
   
-      <ion-button color="warning" expand="full" fill="outline" shape="round" type="submit">Crear</ion-button>
+      <ion-button color="warning" expand="full" fill="outline" shape="round" type="submit">Modificar Viaje</ion-button>
     </form>
   </ion-card>
 </ion-content>

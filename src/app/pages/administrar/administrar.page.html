@@ -12,22 +12,62 @@
     <ion-button (click)="mostrarViajes()">Administrar Viajes</ion-button>
   </div>
 
-  <!-- Formulario y lista para administrar usuarios -->
+  <!-- Formulario para administrar usuarios -->
   <div *ngIf="modoAdministracion === 'usuarios'">
     <ion-card>
       <ion-card-header>
         <ion-card-title>Administrar Usuarios</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <form [formGroup]="persona" (ngSubmit)="createUsuario()">
-          <ion-input formControlName="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline"></ion-input>
-          <ion-input formControlName="nombre" type="text" label="Nombre" labelPlacement="stacked" fill="outline"></ion-input>
-          <ion-input formControlName="apellido" type="text" label="Apellido" labelPlacement="stacked" fill="outline"></ion-input>
-          <ion-input formControlName="correo" type="email" label="Correo" labelPlacement="stacked" fill="outline"></ion-input>
-          <ion-input formControlName="telefono" type="text" label="Teléfono" labelPlacement="stacked" fill="outline"></ion-input>
-          <ion-input *ngIf="persona.controls.esConductor.value" formControlName="nombre_auto" type="text" label="Marca de auto" labelPlacement="stacked" fill="outline"></ion-input>
-          <ion-input *ngIf="persona.controls.esConductor.value" formControlName="capacidad_auto" type="number" label="Capacidad de auto" labelPlacement="stacked" fill="outline"></ion-input>
+        <form [formGroup]="persona" (ngSubmit)="createUsuario()" style="margin: 20px;">
+          <ion-input formControlName="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline" helperText="Sin puntos y con guión."></ion-input>
+          <br>
+          <ion-input formControlName="nombre" type="text" label="Nombre" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
+          <br>
+          <ion-input formControlName="apellido" type="text" label="Apellido" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
+          <br>
           
+          <ion-list>
+            <ion-label>Género</ion-label>
+            <ion-radio-group formControlName="genero">
+              <ion-item>
+                <ion-label>Masculino</ion-label>
+                <ion-radio slot="start" value="Masculino"></ion-radio>
+              </ion-item>
+              <ion-item>
+                <ion-label>Femenino</ion-label>
+                <ion-radio slot="start" value="Femenino"></ion-radio>
+              </ion-item>
+              <ion-item>
+                <ion-label>Otro</ion-label>
+                <ion-radio slot="start" value="Otro"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </ion-list>
+          
+          <br>
+
+          <ion-input formControlName="telefono" type="text" label="Teléfono" labelPlacement="stacked" fill="outline" helperText="9 dígitos. Solo números."></ion-input>
+          <br>
+          <ion-input formControlName="correo" type="email" label="Correo" labelPlacement="stacked" fill="outline" helperText="Debe ser un correo institucional! (@duocuc.cl)"></ion-input>
+          <br>
+
+          <!-- Checkbox para conductor -->
+          <ion-item>
+            <ion-checkbox formControlName="esConductor" slot="start"></ion-checkbox>
+            <ion-label>Eres conductor?</ion-label>
+          </ion-item>
+          <br>
+
+          <!-- Campos adicionales si es conductor -->
+          <ion-input *ngIf="persona.get('esConductor')?.value" formControlName="patente" type="text" label="Patente" labelPlacement="stacked" fill="outline" helperText="Debe ser una patente válida."></ion-input>
+          <br>
+          <ion-input *ngIf="persona.get('esConductor')?.value" formControlName="nombre_auto" type="text" label="Marca de auto" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
+          <br>
+          <ion-input *ngIf="persona.get('esConductor')?.value" formControlName="capacidad_auto" type="number" label="Capacidad de auto" labelPlacement="stacked" fill="outline" helperText="Solo números, mínimo 2."></ion-input>
+          <br>
+
+          <!-- Botones de acción -->
           <ion-button expand="block" color="success" [disabled]="persona.invalid" type="submit">REGISTRAR</ion-button>
           <ion-button expand="block" color="warning" (click)="updateUsuario()">MODIFICAR</ion-button>
           <ion-button expand="block" color="medium" type="reset">LIMPIAR</ion-button>
@@ -37,33 +77,58 @@
 
     <!-- Lista de usuarios -->
     <ion-list *ngFor="let usuario of usuarios">
-      <ion-item (click)="usuarioDrop(usuario.rut)">
-        <ion-icon name="person-circle-outline"></ion-icon>
-        {{ usuario.nombre }} {{ usuario.apellido }} ({{ usuario.tipo_usuario }})
-      </ion-item>
-      <div *ngIf="usuarioVisible === usuario.rut">
-        <p><strong>RUT:</strong> {{ usuario.rut }}</p>
-        <p><strong>Genero:</strong> {{ usuario.genero }}</p>
-        <p><strong>Correo:</strong> {{ usuario.correo }}</p>
-        <p><strong>Telefono:</strong> {{ usuario.telefono }}</p>
-        <ion-button (click)="getUsuario(usuario.rut)" color="warning">BUSCAR</ion-button>
-        <ion-button (click)="deleteUsuario(usuario.rut)" color="danger">ELIMINAR</ion-button>
-      </div>
+      <ion-card>
+        <ion-card-content>
+          <ion-item>
+            <ion-avatar slot="start">
+              <ion-icon name="person-circle-outline"></ion-icon>
+            </ion-avatar>
+            <ion-label>
+              <h2>{{ usuario.nombre }} {{ usuario.apellido }}</h2>
+              <p><strong>RUT:</strong> {{ usuario.rut }}</p>
+              <p><strong>Género:</strong> {{ usuario.genero }}</p>
+              <p><strong>Correo:</strong> {{ usuario.correo }}</p>
+              <p><strong>Teléfono:</strong> {{ usuario.telefono }}</p>
+              <p><strong>Tipo Usuario:</strong> {{ usuario.tipo_usuario }}</p>
+              <p *ngIf="usuario.tipo_usuario === 'estudiante_conductor'"><strong>Auto:</strong> {{ usuario.nombre_auto }} (Capacidad: {{ usuario.capacidad_auto }})</p>
+            </ion-label>
+          </ion-item>
+          <ion-button expand="full" color="warning" (click)="getUsuario(usuario.rut)">Buscar</ion-button>
+          <ion-button expand="full" color="danger" (click)="deleteUsuario(usuario.rut)">Eliminar</ion-button>
+        </ion-card-content>
+      </ion-card>
     </ion-list>
   </div>
 
-  <!-- Formulario y lista para administrar viajes -->
+  <!-- Formulario para administrar viajes -->
   <div *ngIf="modoAdministracion === 'viajes'">
     <ion-card>
       <ion-card-header>
         <ion-card-title>Administrar Viajes</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <form [formGroup]="viaje" (ngSubmit)="createViaje()">
-          <ion-input formControlName="id" type="number" label="ID del Viaje" labelPlacement="stacked" fill="outline"></ion-input>
-          <ion-input formControlName="nombre_destino" type="text" label="Destino" labelPlacement="stacked" fill="outline"></ion-input>
-          <ion-input formControlName="precio" type="number" label="Precio" labelPlacement="stacked" fill="outline"></ion-input>
+        <form [formGroup]="viaje" (ngSubmit)="createViaje()" style="margin: 20px;">
+          <ion-input formControlName="id" type="number" label="ID del Viaje" labelPlacement="stacked" fill="outline" helperText="Ingrese un ID único."></ion-input>
+          <br>
+          <ion-input formControlName="nombre_destino" type="text" label="Destino" labelPlacement="stacked" fill="outline" helperText="Destino del viaje"></ion-input>
+          <br>
+          
+          <ion-input formControlName="patente" type="text" label="Patente del vehículo" labelPlacement="stacked" fill="outline" readonly></ion-input>
+          <br>
+          <ion-input formControlName="costo" type="number" label="Costo del viaje" labelPlacement="stacked" fill="outline" helperText="Ingrese el costo del viaje"></ion-input>
+          <br>
+          <ion-input formControlName="asientos_disponibles" type="number" label="Asientos disponibles" labelPlacement="stacked" fill="outline" helperText="No puede ser menor/mayor a la cantidad de asientos de su vehículo"></ion-input>
+          <br>
+          <ion-input formControlName="hora_salida" type="time" label="Hora de salida" labelPlacement="stacked" fill="outline" helperText="Debe ser una hora válida"></ion-input>
+          <br>
 
+          <ion-radio-group formControlName="forma_pago">
+            <ion-radio value="Efectivo">Efectivo</ion-radio>
+            <ion-radio value="Transferencia">Transferencia</ion-radio>
+          </ion-radio-group>
+          <br>
+          
+          <!-- Botones de acción -->
           <ion-button expand="block" color="success" [disabled]="viaje.invalid" type="submit">REGISTRAR</ion-button>
           <ion-button expand="block" color="warning" (click)="updateViaje()">MODIFICAR</ion-button>
           <ion-button expand="block" color="medium" type="reset">LIMPIAR</ion-button>
@@ -73,16 +138,28 @@
 
     <!-- Lista de viajes -->
     <ion-list *ngFor="let viaje of viajes">
-      <ion-item (click)="viajeDrop(viaje.id)">
-        <ion-icon name="car-outline"></ion-icon>
-        ({{ viaje.id }}) Viaje creado por {{ viaje.estudiante_conductor }}
-      </ion-item>
-      <div *ngIf="viajeVisible === viaje.id">
-        <p><strong>Conductor:</strong> {{ viaje.estudiante_conductor }}</p>
-        <p><strong>Pasajeros:</strong> {{ viaje.pasajeros }}</p>
-        <ion-button (click)="getViaje(viaje.id)" color="warning">BUSCAR</ion-button>
-        <ion-button (click)="deleteViaje(viaje.id)" color="danger">ELIMINAR</ion-button>
-      </div>
+      <ion-card>
+        <ion-card-content>
+          <ion-item>
+            <ion-avatar slot="start">
+              <ion-icon name="car-outline"></ion-icon>
+            </ion-avatar>
+            <ion-label>
+              <h2>ID Viaje: {{ viaje.id }}</h2>
+              <p><strong>Conductor:</strong> {{ viaje.estudiante_conductor }}</p>
+              <p><strong>Destino:</strong> {{ viaje.nombre_destino }}</p>
+              <p><strong>Patente:</strong> {{ viaje.patente }}</p>
+              <p><strong>Costo:</strong> ${{ viaje.costo }}</p>
+              <p><strong>Asientos disponibles:</strong> {{ viaje.asientos_disponibles }}</p>
+              <p><strong>Hora de salida:</strong> {{ viaje.hora_salida }}</p>
+              <p><strong>Forma de pago:</strong> {{ viaje.forma_pago }}</p>
+              <p><strong>Pasajeros:</strong> {{ viaje.pasajeros.join(', ') }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-button expand="full" color="warning" (click)="getViaje(viaje.id)">Buscar</ion-button>
+          <ion-button expand="full" color="danger" (click)="deleteViaje(viaje.id)">Eliminar</ion-button>
+        </ion-card-content>
+      </ion-card>
     </ion-list>
   </div>
 

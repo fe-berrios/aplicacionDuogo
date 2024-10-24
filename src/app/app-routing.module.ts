@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { authGuard } from './services/auth.guard';
 
 const routes: Routes = [
   {
     path: 'home',
+    canActivate: [authGuard],
     loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule)
   },
   {
@@ -36,10 +38,15 @@ const routes: Routes = [
     loadChildren: () => import('./pages/crear-viaje/crear-viaje.module').then( m => m.CrearViajePageModule)
   },
   {
+    path: 'modificar-viaje',
+    loadChildren: () => import('./pages/modificar-viaje/modificar-viaje.module').then( m => m.ModificarViajePageModule)
+  },
+  {
     path: '**', // '**' Deja el path a todo aquel link que dirija a alguna página que no exista
     loadChildren: () => import('./pages/error404/error404.module').then( m => m.Error404PageModule)
     // Este path siempre debe estar al final del json, debido que se recorre el json path por path.
   },
+
 ];
 
 @NgModule({

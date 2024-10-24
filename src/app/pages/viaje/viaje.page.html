@@ -12,8 +12,11 @@
   <br>
 
   <!-- Botón para crear un viaje -->
-  <ion-button *ngIf="tipoUsuario === 'estudiante_conductor'" expand="full" [routerLink]="['/crear-viaje']">
-    Crear Viaje
+  <ion-button 
+  *ngIf="tipoUsuario === 'estudiante_conductor' && !tieneViaje"
+  expand="full" 
+  [routerLink]="['/crear-viaje']">
+  Crear Viaje
   </ion-button>
 
   <!-- Si no hay viajes, mostrar una tarjeta con un mensaje -->
@@ -25,56 +28,75 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Lista de viajes -->
-  <ion-card *ngFor="let viaje of viajes">
-    <ion-card-content>
-      <!-- Item 1 Sliding -->
-      <ion-item-sliding>
-        <ion-item>
-          <ion-avatar slot="start">
-            <ion-icon name="person-circle-outline"></ion-icon>
-          </ion-avatar>
-          <ion-label>
-            <p><strong>Conductor:</strong> {{viaje.estudiante_conductor}}</p>
-            <p><strong>Estado:</strong> {{viaje.estado_viaje}}</p>
-          </ion-label>
-        </ion-item>
-  
-        <ion-item-options side="end">
-          <ion-item-option color="success">
-            Agendar
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-  
-      <ion-grid>
-        <ion-row>
-          <ion-col>
-            <p><strong>Desde:</strong> DUOC UC: Sede Puente Alto</p>
-          </ion-col>
-          <ion-col>
-            <p><strong>Hasta:</strong> {{ viaje.nombre_destino }}</p>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <p><strong>Capacidad:</strong> {{ viaje.asientos_disponibles }}</p>
-          </ion-col>
-          <ion-col>
-            <p><strong>Forma de pago:</strong> {{ viaje.forma_pago }}</p>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-  
-      <!-- Botones 'Unirme' y 'Ver Ruta' -->
-      <ion-button (click)="unirme(viaje)" size="block">
-        Unirme
-      </ion-button>
-      <ion-button (click)="verRuta(viaje)" size="block">
-        Ver Ruta
-      </ion-button>
-  
-    </ion-card-content>
-  </ion-card>
+<!-- Lista de viajes -->
+<ion-card *ngFor="let viaje of viajes">
+  <ion-card-content>
+    <!-- Item 1 Sliding -->
+    <ion-item-sliding>
+      <ion-item>
+        <ion-avatar slot="start">
+          <ion-icon name="person-circle-outline"></ion-icon>
+        </ion-avatar>
+        <ion-label>
+          <p><strong>Conductor:</strong> {{viaje.estudiante_conductor}}</p>
+          <p><strong>Estado:</strong> {{viaje.estado_viaje}}</p>
+          <p><strong>Costo:</strong> {{ viaje.costo | currency:'CLP ':'symbol':'1.0-0' }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option color="success">
+          Agendar
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <p><strong>Desde:</strong> DUOC UC: Sede Puente Alto</p>
+        </ion-col>
+        <ion-col>
+          <p><strong>Hasta:</strong> {{ viaje.nombre_destino }}</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <p><strong>Capacidad:</strong> {{ viaje.asientos_disponibles }}</p>
+        </ion-col>
+        <ion-col>
+          <p><strong>Forma de pago:</strong> {{ viaje.forma_pago }}</p>
+        </ion-col>
+        <ion-col>
+          <p><strong>Hora de salida:</strong> {{ viaje.hora_salida }}</p>
+        </ion-col>
+        <ion-col>
+          <p><strong>Patente:</strong> {{ viaje.patente }}</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <!-- Botones 'Modificar' y 'Cancelar' solo si el usuario es el conductor -->
+    <ion-button *ngIf="esConductor(viaje)" (click)="modificarViaje(viaje)" color="primary" size="block">
+      Modificar viaje
+    </ion-button>
+    <ion-button *ngIf="esConductor(viaje)" (click)="cancelarViaje(viaje)" color="danger" size="block">
+      Cancelar viaje
+    </ion-button>
+
+    <!-- Botones 'Unirme' o 'Abandonar' dependiendo si el usuario está asociado al viaje -->
+    <ion-button *ngIf="!esPasajero(viaje) && !esConductor(viaje)" [disabled]="tieneViaje" (click)="unirme(viaje)" size="block">
+      Unirme
+    </ion-button>
+    <ion-button *ngIf="esPasajero(viaje)" (click)="abandonar(viaje)" color="danger" size="block">
+      Abandonar
+    </ion-button>
+
+    <ion-button (click)="verRuta(viaje)" size="block">
+      Ver Ruta
+    </ion-button>
+
+  </ion-card-content>
+</ion-card>
 
 </ion-content>
