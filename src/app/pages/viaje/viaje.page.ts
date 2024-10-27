@@ -18,6 +18,7 @@ export class ViajePage implements OnInit {
   tipoUsuario: string = '';
   usuario: any;
   tieneViaje: boolean = false; // Nueva variable para verificar si ya está en un viaje
+  isMapLoading: boolean = true;
 
   // Leaflet (mapa)
   private map: leaflet.Map | undefined;
@@ -43,9 +44,9 @@ export class ViajePage implements OnInit {
     setTimeout(() => {
           // 'locate' Ubicación actual utiliza TÚ ubicación de dispositivo.
     this.map = leaflet.map('map_lista').setView([-33.59838016321339, -70.57879780298838], 16);
-    leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    leaflet.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
     }).addTo(this.map);
 
     // Agregar buscador de direcciones en el mapa
@@ -74,8 +75,10 @@ export class ViajePage implements OnInit {
         }).addTo(this.map);
       }
     });
+    
     }, 2000);
   }
+
 
   verRuta(viaje: any) {
     const origen = leaflet.latLng(-33.59838016321339, -70.57879780298838);

@@ -111,7 +111,6 @@ export class RegistroPage implements OnInit {
     }
   }
   
-
   // Función para mostrar la alerta
   async mostrarAlerta(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
@@ -130,7 +129,7 @@ export class RegistroPage implements OnInit {
   handleChange(ev: CustomEvent) {
     console.log('Género seleccionado:', ev.detail.value);
   }
-
+// validación RUT
   validarRut():ValidatorFn{
     return () => {
       const rut = this.usuario.controls.rut.value;
@@ -158,7 +157,7 @@ export class RegistroPage implements OnInit {
       return null;
     };
   }
-
+//validar patente chilena, nueva y antigua
   validarPatenteChilena(){
     return (control: AbstractControl): ValidationErrors | null => {
       const patentePattern = (/^[A-Z]{2}[0-9]{4}$|^[A-Z]{4}[0-9]{2}$/);
