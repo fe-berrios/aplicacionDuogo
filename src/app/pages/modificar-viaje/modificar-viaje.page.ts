@@ -95,53 +95,55 @@ export class ModificarViajePage implements OnInit {
   
 
   initMapa() {
-    if (!this.map) {
-      this.map = leaflet.map('map_modificar').setView([this.latitud || -33.59838016321339, this.longitud || -70.57879780298838], 16);
-
-      leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }).addTo(this.map);
-
-      this.geocoder = geo.geocoder({
-        placeholder: "Ingrese dirección a buscar",
-        errorMessage: "Dirección NO encontrada"
-      }).addTo(this.map);
-
-      this.geocoder.on('markgeocode', (e) => {
-        this.latitud = e.geocode.properties['lat'];
-        this.longitud = e.geocode.properties['lon'];
-        this.direccion = e.geocode.properties['display_name'];
-
-        this.viaje.patchValue({
-          latitud: this.latitud.toString(),
-          longitud: this.longitud.toString(),
-          nombre_destino: this.direccion
-        });
-
-        if (this.map) {
-          if (this.currentRoute) {
-            this.map.removeControl(this.currentRoute);  // Remover la ruta anterior
+    setTimeout(() => {
+      if (!this.map) {
+        this.map = leaflet.map('map_modificar').setView([this.latitud || -33.59838016321339, this.longitud || -70.57879780298838], 16);
+  
+        leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(this.map);
+  
+        this.geocoder = geo.geocoder({
+          placeholder: "Ingrese dirección a buscar",
+          errorMessage: "Dirección NO encontrada"
+        }).addTo(this.map);
+  
+        this.geocoder.on('markgeocode', (e) => {
+          this.latitud = e.geocode.properties['lat'];
+          this.longitud = e.geocode.properties['lon'];
+          this.direccion = e.geocode.properties['display_name'];
+  
+          this.viaje.patchValue({
+            latitud: this.latitud.toString(),
+            longitud: this.longitud.toString(),
+            nombre_destino: this.direccion
+          });
+  
+          if (this.map) {
+            if (this.currentRoute) {
+              this.map.removeControl(this.currentRoute);  // Remover la ruta anterior
+            }
+  
+            this.currentRoute = leaflet.Routing.control({
+              waypoints: [
+                leaflet.latLng(-33.59838016321339, -70.57879780298838),
+                leaflet.latLng(this.latitud, this.longitud)
+              ],
+              fitSelectedRoutes: true
+            }).on('routesfound', (e) => {
+              this.distanciaMetros = e.routes[0].summary.totalDistance;
+              this.tiempoSegundos = e.routes[0].summary.totalTime;
+  
+              this.viaje.patchValue({
+                distancia_metros: this.distanciaMetros.toString(),
+                tiempo_segundos: this.tiempoSegundos.toString()
+              });
+            }).addTo(this.map);
           }
-
-          this.currentRoute = leaflet.Routing.control({
-            waypoints: [
-              leaflet.latLng(-33.59838016321339, -70.57879780298838),
-              leaflet.latLng(this.latitud, this.longitud)
-            ],
-            fitSelectedRoutes: true
-          }).on('routesfound', (e) => {
-            this.distanciaMetros = e.routes[0].summary.totalDistance;
-            this.tiempoSegundos = e.routes[0].summary.totalTime;
-
-            this.viaje.patchValue({
-              distancia_metros: this.distanciaMetros.toString(),
-              tiempo_segundos: this.tiempoSegundos.toString()
-            });
-          }).addTo(this.map);
-        }
-      });
-    }
+        });
+      }
+    }, 2000);
   }
 
   // Método para modificar un viaje existente
@@ -150,7 +152,10 @@ export class ModificarViajePage implements OnInit {
       const resultado = await this.viajeService.updateViaje(this.viajeId, this.viaje.value);
       if (resultado) {
         console.log('Viaje modificado con éxito');
-        this.router.navigate(['/home/viaje']);
+      // Navegar a la página de viajes y refrescar la página
+      this.router.navigate(['/home/viaje']).then(() => {
+        window.location.reload();
+      });
       } else {
         console.log('Error al modificar el viaje');
       }

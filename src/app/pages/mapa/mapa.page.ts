@@ -73,43 +73,55 @@ export class MapaPage implements OnInit {
   }
   
 
-  // Mostrar la ruta del viaje en el mapa usando leaflet-routing-machine
-  mostrarRutaEnMapa() {
-    // Coordenadas del destino desde el viaje
-    const destino = [this.viajeUsuario.latitud, this.viajeUsuario.longitud];
-
-    if (this.routingControl) {
-      this.map?.removeControl(this.routingControl);
-    }
-
-    // Crear plan personalizado sin marcadores de origen y destino
-    const plan = new leaflet.Routing.Plan(
-      [
-        leaflet.latLng(this.origenLat, this.origenLng), // Coordenadas de inicio fijas
-        leaflet.latLng(destino[0], destino[1]) // Coordenadas del destino del viaje
-      ], 
-      {
-        createMarker: function() { return false; }  // Devuelve false para no crear marcadores
-      }
-    );
-
-    // Traza la ruta desde el punto de origen fijo hasta el destino sin mostrar instrucciones
-    this.routingControl = leaflet.Routing.control({
-      plan: plan,  // Usar el plan personalizado sin marcadores
-      routeWhileDragging: true,
-      show: false,  // Desactiva la visualización de las instrucciones
-      addWaypoints: false,  // Desactiva la posibilidad de agregar puntos intermedios
-      lineOptions: {
-        styles: [{ color: '#ff2e17', weight: 4 }],  // Personalización de la línea
-        extendToWaypoints: true,  // Esta propiedad debe estar presente
-        missingRouteTolerance: 0  // Tolerancia para rutas faltantes
-      }
-    }).addTo(this.map!);
+// Mostrar la ruta del viaje en el mapa usando leaflet-routing-machine
+mostrarRutaEnMapa() {
+  // Verificar si el mapa está inicializado
+  if (!this.map) {
+    console.warn('El mapa aún no está listo.');
+    return;
   }
+
+  // Verificar si el destino tiene coordenadas válidas
+  const destino = [this.viajeUsuario.latitud, this.viajeUsuario.longitud];
+  if (!destino[0] || !destino[1]) {
+    console.error('Las coordenadas de destino no están definidas.');
+    return;
+  }
+
+  // Remover control de ruta anterior si existe
+  if (this.routingControl) {
+    this.map.removeControl(this.routingControl);
+  }
+
+  // Crear plan de ruta personalizado
+  const plan = new leaflet.Routing.Plan(
+    [
+      leaflet.latLng(this.origenLat, this.origenLng), // Coordenadas de inicio fijas
+      leaflet.latLng(destino[0], destino[1]) // Coordenadas del destino del viaje
+    ], 
+    {
+      createMarker: () => false  // Retorna false para no crear marcadores
+    }
+  );
+
+  // Crear y añadir el control de la ruta al mapa
+  this.routingControl = leaflet.Routing.control({
+    plan: plan,
+    routeWhileDragging: true,
+    show: false,
+    addWaypoints: false,
+    lineOptions: {
+      styles: [{ color: '#ff2e17', weight: 4 }], // Estilo de la línea
+      extendToWaypoints: true,  // Extiende la línea a los puntos de ruta
+      missingRouteTolerance: 0  // Tolerancia para rutas faltantes
+    }
+  }).addTo(this.map);
+}
+
 
   // Inicializar el mapa con Leaflet
   initMapa() {
-    // Verificar si el mapa ya fue inicializado+
+    // Inicializar el mapa con un retraso para asegurar que todos los elementos están listos
     setTimeout(() => {
       if (this.map) {
         return;
@@ -117,17 +129,23 @@ export class MapaPage implements OnInit {
   
       // Inicializar el mapa centrado en la ubicación deseada
       this.map = leaflet.map('map_map', {
-        zoomControl: false,   // Habilitar control de botones de zoom
-      }).locate({ setView: true, maxZoom: 16 });
+        zoomControl: false,
+        center: leaflet.latLng(this.origenLat, this.origenLng),  // Centrado en el origen
+        zoom: 16, // Nivel de zoom
+      });
   
       // Cargar las capas de OpenStreetMap
       leaflet
         .tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         })
         .addTo(this.map);
+  
+      // Llamar a mostrarRutaEnMapa si el usuario tiene un viaje pendiente
+      if (this.tieneViajePendiente) {
+        this.mostrarRutaEnMapa();
+      }
     }, 2000);
-   }
+  }
 }

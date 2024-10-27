@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomePage } from './home.page';
+import { authGuard } from 'src/app/services/auth.guard';
 
 const routes: Routes = [
   {
@@ -18,6 +19,7 @@ const routes: Routes = [
       },
       {
         path: 'historial',
+        canActivate: [authGuard],
         loadChildren: () => import('../historial/historial.module').then(m => m.HistorialPageModule)
       },
       {

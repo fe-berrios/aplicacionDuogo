@@ -40,7 +40,8 @@ export class ViajePage implements OnInit {
   }
 
   initMapa() {
-    // 'locate' Ubicación actual utiliza TÚ ubicación de dispositivo.
+    setTimeout(() => {
+          // 'locate' Ubicación actual utiliza TÚ ubicación de dispositivo.
     this.map = leaflet.map('map_lista').setView([-33.59838016321339, -70.57879780298838], 16);
     leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -73,6 +74,7 @@ export class ViajePage implements OnInit {
         }).addTo(this.map);
       }
     });
+    }, 2000);
   }
 
   verRuta(viaje: any) {

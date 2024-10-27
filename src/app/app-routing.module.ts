@@ -35,6 +35,7 @@ const routes: Routes = [
   },
   {
     path: 'crear-viaje',
+    canActivate: [authGuard],
     loadChildren: () => import('./pages/crear-viaje/crear-viaje.module').then( m => m.CrearViajePageModule)
   },
   {
