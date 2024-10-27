@@ -9,13 +9,15 @@
     <ion-card-header>
       <ion-card-content>
         <!-- Campos de entrada y botones -->
-        <ion-input [(ngModel)]="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline"></ion-input>
+        <ion-input [(ngModel)]="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline" placeholder="12345678-9"></ion-input>
         <br>
-        <ion-input [(ngModel)]="contrasena" type="password" label="Contraseña" labelPlacement="stacked" fill="outline">
+        <ion-input [(ngModel)]="contrasena" type="password" label="Contraseña" labelPlacement="stacked" fill="outline" placeholder="Aquí va su contraseña">
           <ion-input-password-toggle slot="end"></ion-input-password-toggle>
         </ion-input>
-        <p style="text-align: center; padding: 5px;"><a routerLink="/olvido">Olvidé Mi Contraseña</a></p>
-        <ion-button (click)="authUsuario()" color="warning" expand="full" fill="outline" shape="round">Iniciar Sesión</ion-button>
+        <p style="text-align: center; padding: 5px;">
+          <a routerLink="/olvido">Olvidé Mi Contraseña</a>
+        </p>
+        <ion-button (click)="login()" color="warning" expand="full" fill="outline" shape="round" >Iniciar Sesión</ion-button>
       </ion-card-content>
     </ion-card-header>
   </ion-card>

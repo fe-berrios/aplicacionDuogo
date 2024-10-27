@@ -109,24 +109,25 @@ export class MapaPage implements OnInit {
 
   // Inicializar el mapa con Leaflet
   initMapa() {
-    // Verificar si el mapa ya fue inicializado
-    if (this.map) {
-      return;
-    }
-
-    // Inicializar el mapa centrado en la ubicación deseada
-    this.map = leaflet.map('map_map', {
-      zoomControl: false,   // Habilitar control de botones de zoom
-    }).locate({ setView: true, maxZoom: 16 });
-
-    // Cargar las capas de OpenStreetMap
-    leaflet
-      .tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      })
-      .addTo(this.map);
-  }
-
+    // Verificar si el mapa ya fue inicializado+
+    setTimeout(() => {
+      if (this.map) {
+        return;
+      }
+  
+      // Inicializar el mapa centrado en la ubicación deseada
+      this.map = leaflet.map('map_map', {
+        zoomControl: false,   // Habilitar control de botones de zoom
+      }).locate({ setView: true, maxZoom: 16 });
+  
+      // Cargar las capas de OpenStreetMap
+      leaflet
+        .tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        })
+        .addTo(this.map);
+    }, 2000);
+   }
 }
