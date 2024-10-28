@@ -44,7 +44,8 @@ export class PerfilPage implements OnInit {
       Validators.max(8),
       Validators.required,
       Validators.pattern("^[0-9]*$") // Solo habilitado si es 'estudiante_conductor'
-    ])
+    ]),
+    patente: new FormControl('',[]),
   });
 
   constructor(private navController: NavController, private usuarioService: UsuarioService) {}

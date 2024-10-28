@@ -57,6 +57,11 @@
             <ion-input formControlName="capacidad_auto"></ion-input>
           </ion-item>
 
+          <ion-item *ngIf="usuario.get('tipo_usuario')?.value === 'estudiante_conductor'">
+            <ion-label position="floating">Patente</ion-label>
+            <ion-input formControlName="patente"></ion-input>
+          </ion-item>
+
           <ion-button expand="block" (click)="guardarCambios()">GUARDAR CAMBIOS</ion-button>
           <ion-button expand="block" color="medium" (click)="cancelEdit()">CANCELAR</ion-button>
         </form>

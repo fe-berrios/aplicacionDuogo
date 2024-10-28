@@ -17,21 +17,23 @@ export class UsuarioService {
     await this.storage.create();
 
     // Asegurar que el usuario administrador existe.
-    await this.ensureAdminUser();
+    await this.ensureDefaultUsers();
   }
 
   // Método para asegurar que siempre exista un usuario 'administrador'
-  private async ensureAdminUser() {
+  private async ensureDefaultUsers() {
     // Obtener la lista de usuarios
     let usuarios: any[] = await this.storage.get("usuarios") || [];
-
+  
     // Verificar si el usuario 'administrador' ya existe
     const adminExists = usuarios.find(usu => usu.tipo_usuario === 'administrador');
-
-    // Si no existe, crearlo
+    const studentExists = usuarios.find(usu => usu.tipo_usuario === 'estudiante');
+    const studentDriverExists = usuarios.find(usu => usu.tipo_usuario === 'estudiante_conductor');
+  
+    // Crear usuario administrador si no existe
     if (!adminExists) {
       const admin = {
-        rut: '10200300-4',  // Puedes cambiar este rut por el que desees.
+        rut: '10200300-4',
         nombre: 'Admin',
         apellido: 'Istrador',
         genero: 'Masculino',
@@ -42,18 +44,65 @@ export class UsuarioService {
         tipo_usuario: 'administrador',
         nombre_auto: '',
         capacidad_auto: '',
+        patente: '',
         esConductor: false
       };
-
-      // Agregar el administrador a la lista de usuarios y guardarlo en Storage
       usuarios.push(admin);
-      await this.storage.set("usuarios", usuarios);
-
       console.log('Usuario administrador creado');
     } else {
       console.log('Usuario administrador ya existe');
     }
+  
+    // Crear usuario estudiante si no existe
+    if (!studentExists) {
+      const estudiante = {
+        rut: '20561718-3',
+        nombre: 'Felipe',
+        apellido: 'Berríos',
+        genero: 'Masculino',
+        correo: 'estudiante@duocuc.cl',
+        telefono: '930199331',
+        contrasena: 'estudiante',
+        contrasena_confirmar: 'estudiante',
+        tipo_usuario: 'estudiante',
+        nombre_auto: '',
+        capacidad_auto: '',
+        patente: '',
+        esConductor: false
+      };
+      usuarios.push(estudiante);
+      console.log('Usuario estudiante creado');
+    } else {
+      console.log('Usuario estudiante ya existe');
+    }
+  
+    // Crear usuario estudiante conductor si no existe
+    if (!studentDriverExists) {
+      const estudianteConductor = {
+        rut: '13706589-4',
+        nombre: 'Marilyn',
+        apellido: 'Correa',
+        genero: 'Femenino',
+        correo: 'conductor@duocuc.cl',
+        telefono: '930199332',
+        contrasena: 'conductor',
+        contrasena_confirmar: 'conductor',
+        tipo_usuario: 'estudiante_conductor',
+        nombre_auto: 'Suzuki',
+        capacidad_auto: '4',
+        patente: 'GFDH75',
+        esConductor: true
+      };
+      usuarios.push(estudianteConductor);
+      console.log('Usuario estudiante conductor creado');
+    } else {
+      console.log('Usuario estudiante conductor ya existe');
+    }
+  
+    // Guardar la lista de usuarios actualizada en Storage
+    await this.storage.set("usuarios", usuarios);
   }
+  
 
   // DAO (Data Access Object) - Métodos ya implementados
   public async createUsuario(usuario: any): Promise<boolean> {

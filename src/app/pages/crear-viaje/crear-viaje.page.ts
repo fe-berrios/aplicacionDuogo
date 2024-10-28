@@ -27,7 +27,7 @@ export class CrearViajePage implements OnInit {
   viaje = new FormGroup({
     id: new FormControl(''),
     estudiante_conductor: new FormControl(''),
-    asientos_disponibles: new FormControl('', [Validators.required]),
+    asientos_disponibles: new FormControl('', [Validators.required, Validators.min(1)]),
     nombre_destino: new FormControl(''),
     latitud: new FormControl(''),
     longitud: new FormControl(''),

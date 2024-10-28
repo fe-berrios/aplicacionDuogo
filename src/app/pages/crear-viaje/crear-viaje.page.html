@@ -24,10 +24,10 @@
       <br>
 
       <!-- Input para el nombre del destino, solo lectura -->
-      <ion-input formControlName="nombre_destino" label="Destino" labelPlacement="stacked" fill="outline" readonly></ion-input>
+      <ion-input formControlName="nombre_destino" label="Destino" labelPlacement="stacked" fill="outline" helperText="Debe buscar una dirección en el mapa" readonly></ion-input>
       <br>
 
-      <ion-input formControlName="asientos_disponibles" type="number" label="Asientos disponibles" labelPlacement="stacked" fill="outline" helperText="No puede ser menor/mayor a la cantidad de asientos de su vehículo"></ion-input>
+      <ion-input formControlName="asientos_disponibles" type="number" label="Asientos disponibles" labelPlacement="stacked" fill="outline" helperText="Debe ser igual o mayor a 1"></ion-input>
       <br>
       
       <ion-input formControlName="hora_salida" type="time" label="Hora de salida" labelPlacement="stacked" fill="outline" helperText="Debe ser una hora válida"></ion-input>
