@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AlertController } from '@ionic/angular';
+import { FireService } from 'src/app/services/fire.service';
 import { UsuarioService } from 'src/app/services/usuario.service';
 import { ViajeService } from 'src/app/services/viaje.service';
 
@@ -81,7 +82,7 @@ export class AdministrarPage implements OnInit {
     patente: new FormControl({value: '', disabled: true}) // Patente no editable
   });
 
-  constructor(private usuarioService: UsuarioService, private viajeService: ViajeService, private alertController: AlertController) { 
+  constructor(private usuarioService: UsuarioService, private viajeService: ViajeService, private alertController: AlertController, private fireService: FireService) { 
     this.persona.get("rut")?.setValidators([Validators.required,Validators.pattern("[0-9]{7,8}-[0-9kK]{1}"),this.validarRut()]);
   }
 
@@ -119,6 +120,17 @@ export class AdministrarPage implements OnInit {
         viaje.pasajeros = []; // Asegurar que siempre sea un array
       }
     });
+  }
+
+  // Firebase
+  async createFire(){
+    // Sacarle el valor al formGroup con el .value
+    if (await this.fireService.crearUsuario(this.persona.value)){
+      alert("Usuario registrado")
+      this.persona.reset();
+    } else {
+      alert("Usuario YA existe")
+    }
   }
 
 

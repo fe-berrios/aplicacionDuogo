@@ -19,7 +19,7 @@
         <ion-card-title>Administrar Usuarios</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <form [formGroup]="persona" (ngSubmit)="createUsuario()" style="margin: 20px;">
+        <form [formGroup]="persona" (ngSubmit)="createFire()" style="margin: 20px;">
           <ion-input formControlName="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline" helperText="Sin puntos y con guión."></ion-input>
           <br>
           <ion-input formControlName="nombre" type="text" label="Nombre" labelPlacement="stacked" fill="outline" helperText="Solo letras."></ion-input>
@@ -68,7 +68,7 @@
           <br>
 
           <!-- Botones de acción -->
-          <ion-button expand="block" color="success" [disabled]="persona.invalid" type="submit">REGISTRAR</ion-button>
+          <ion-button expand="block" color="success" type="submit">REGISTRAR</ion-button>
           <ion-button expand="block" color="warning" (click)="updateUsuario()">MODIFICAR</ion-button>
           <ion-button expand="block" color="medium" type="reset">LIMPIAR</ion-button>
         </form>
