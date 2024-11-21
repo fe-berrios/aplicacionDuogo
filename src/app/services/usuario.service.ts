@@ -103,7 +103,6 @@ export class UsuarioService {
     await this.storage.set("usuarios", usuarios);
   }
   
-
   // DAO (Data Access Object) - Métodos ya implementados
   public async createUsuario(usuario: any): Promise<boolean> {
     let usuarios: any[] = await this.storage.get("usuarios") || [];

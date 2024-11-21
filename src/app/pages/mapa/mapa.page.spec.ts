@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+/*import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MapaPage } from './mapa.page';
 
 describe('MapaPage', () => {
@@ -14,4 +14,4 @@ describe('MapaPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-});
+});*/

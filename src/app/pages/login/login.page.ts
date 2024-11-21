@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { FireService } from 'src/app/services/fire.service';
 import { UsuarioService } from 'src/app/services/usuario.service';
 
 @Component({
@@ -11,22 +12,25 @@ import { UsuarioService } from 'src/app/services/usuario.service';
 export class LoginPage implements OnInit {
 
   //alertButtons= ['Action'];
-  rut: string = '';
+  correo: string = '';
   contrasena: string = '';
 
-  constructor(private usuarioService: UsuarioService, private router: Router, private alertController: AlertController) { }
+  constructor(private usuarioService: UsuarioService, 
+              private router: Router, 
+              private alertController: AlertController,
+              private fireService: FireService) { }
 
   ngOnInit() {
   }
 
   async login() {
-    if (!this.rut || !this.contrasena) {
+    if (!this.correo || !this.contrasena) {
       this.mostrarAlerta("Se requiere ambos campos");
       return;
     }
   
     // Llama al servicio de autenticación
-    if (await this.usuarioService.authUsuario(this.rut, this.contrasena)) {
+    if (await this.fireService.authUsuario(this.correo, this.contrasena)) {
       this.router.navigate(['/home']);
     } else {
       this.mostrarAlerta("Rut o contraseña incorrectos!!");

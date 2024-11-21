@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, Valid
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { control } from 'leaflet';
+import { FireService } from 'src/app/services/fire.service';
 import { UsuarioService } from 'src/app/services/usuario.service';
 
 
@@ -57,7 +58,10 @@ export class RegistroPage implements OnInit {
     esConductor: new FormControl(false) // Control para el checkbox
   });
 
-  constructor(private usuarioService: UsuarioService, private router: Router, private alertController: AlertController) {
+  constructor(private usuarioService: UsuarioService, 
+              private router: Router, 
+              private alertController: AlertController,
+              private fireService: FireService) {
       this.usuario.get("rut")?.setValidators([Validators.required,Validators.pattern("[0-9]{7,8}-[0-9kK]{1}"),this.validarRut()]);
    }
 
@@ -102,8 +106,9 @@ export class RegistroPage implements OnInit {
   
     const nuevoUsuario = this.usuario.getRawValue(); // Obtiene solo los campos habilitados
   
-    if (await this.usuarioService.createUsuario(nuevoUsuario)) {
+    if (await this.fireService.crearUsuario(nuevoUsuario)) {
       alert("Usuario creado con éxito!");
+      this.usuario.reset();
       await this.mostrarAlerta('Gracias por registrarse en DuoGO!', '¡¡Sus datos han sido ingresados con éxito!!');
       this.router.navigate(['/login']);
     } else {
