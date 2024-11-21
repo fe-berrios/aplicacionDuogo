@@ -41,39 +41,23 @@ export class FireService {
   }
 
   public async authUsuario(email: string, contrasena: string): Promise<boolean> {
-    try {
-      // Iniciar sesión con Firebase Authentication
-      const userCredential = await this.fireAuth.signInWithEmailAndPassword(email, contrasena);
-      const userId = userCredential.user?.uid;
-      console.log(userId)
-  
-      if (userId) {
-        // Obtener documento del usuario desde Firestore
-        const usuarioDoc = await firstValueFrom(this.fireStore.collection('usuarios').doc(userId).get());
-        console.log("1")
-        console.log(usuarioDoc)
-        if (usuarioDoc.exists) {
-          console.log("2")
-          const usuarioData = usuarioDoc.data();
-  
-          // Almacenar datos del usuario en localStorage
-          if (usuarioData) {
-            console.log("3")
-            localStorage.setItem("usuario", JSON.stringify(usuarioData));
-            return true;
-          }
-        }
+    // Iniciar sesión con Firebase Authentication
+    const userCredential = await this.fireAuth.signInWithEmailAndPassword(email, contrasena);
+    const userId = userCredential.user?.uid;
+    console.log(userId)
+
+    if (userId) {
+      const usuarioFire = await firstValueFrom(this.fireStore.collection('usuarios').doc(userId).get()); 
+      const usuarioData = usuarioFire.data();
+      console.log("userdate", usuarioData)
+      console.log("userfire", usuarioFire)
+      
+
+      if(usuarioData){
+        localStorage.setItem("usuario", JSON.stringify(usuarioData));
+        return true;
       }
-  
-      return false;
-    } catch (error) {
-      // Verificación de tipo para manejar el error
-      if (error instanceof Error) {
-        console.error("Error en autenticación:", error.message);
-      } else {
-        console.error("Error inesperado en autenticación:", error);
-      }
-      return false;
     }
+    return false;
   }
 }
