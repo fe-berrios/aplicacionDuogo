@@ -40,24 +40,15 @@ export class FireService {
     return this.fireStore.collection('usuarios').doc(rut).delete();
   }
 
-  public async authUsuario(email: string, contrasena: string): Promise<boolean> {
-    // Iniciar sesión con Firebase Authentication
-    const userCredential = await this.fireAuth.signInWithEmailAndPassword(email, contrasena);
-    const userId = userCredential.user?.uid;
-    console.log(userId)
-
-    if (userId) {
-      const usuarioFire = await firstValueFrom(this.fireStore.collection('usuarios').doc(userId).get()); 
-      const usuarioData = usuarioFire.data();
-      console.log("userdate", usuarioData)
-      console.log("userfire", usuarioFire)
-      
-
-      if(usuarioData){
-        localStorage.setItem("usuario", JSON.stringify(usuarioData));
-        return true;
+  getUsuarioUid(uid: string): Promise<any>{
+    return this.fireStore.collection('usuarios', ref => ref.where('uid', '==', uid)).get().toPromise().then((snapshot) => {
+      if (snapshot && !snapshot.empty){
+        return snapshot.docs[0].data();
       }
-    }
-    return false;
+      return null;
+    }).catch((error) => {
+      console.error("Error al obtener usuario:", error);
+      return null;
+    })
   }
 }
