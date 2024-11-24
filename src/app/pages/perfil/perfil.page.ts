@@ -10,6 +10,7 @@ import { NavController } from '@ionic/angular';
 })
 export class PerfilPage implements OnInit {
   isEditing: boolean = false;  // Controla si está en modo de edición o no
+  isFlipped = false;
 
   usuario = new FormGroup({
     rut: new FormControl({ value: '', disabled: true }, [
@@ -61,6 +62,20 @@ export class PerfilPage implements OnInit {
         this.toggleAutoFields(tipoUsuario);  // Ahora el valor siempre será de tipo string
       });
     }
+  }
+  
+  toggleFlip(): void {
+    this.isFlipped = !this.isFlipped;
+  }
+
+  dataQR(): string {
+    const nombre = this.usuario.get('nombre')?.value ?? '';
+    const apellido = this.usuario.get('apellido')?.value ?? '';
+    const rut = this.usuario.get('rut')?.value ?? '';
+    const correo = this.usuario.get('correo')?.value ?? '';
+  
+    // Opcional: Formatear los datos como JSON o texto plano
+    return `${nombre}, ${apellido}, ${rut}, ${correo}`;
   }
   
   formatTipoUsuario(tipoUsuario: string | null): string {

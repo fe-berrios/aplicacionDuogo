@@ -5,6 +5,9 @@
     align-items: center;
     height: 100vh; /* Ocupa toda la altura de la ventana */
     text-align: center;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
   }
   
   .profile-img {
@@ -21,9 +24,58 @@
     padding: 2px 0; /* Espacio vertical ajustado */
   }
 
+  ion-card {
+    margin: 0;
+  }
+
   ion-button {
     width: 100%;  /* Hace que todos los botones ocupen el 100% del ancho disponible */
     max-width: 300px;  /* Limita el ancho máximo de los botones, puedes ajustar este valor */
-    margin: 10px 0;  /* Añade un margen vertical entre los botones */
+    margin: 0;  /* Añade un margen vertical entre los botones */
+  }
+
+  .flip-card {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    height: 300px;
+    perspective: 1000px;
+    margin:  0;
+    cursor: pointer; /* Añade cursor de mano al pasar por la tarjeta */
   }
   
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s ease-in-out;
+    transform-style: preserve-3d;
+  }
+  
+  .flip-card-inner.flipped {
+    transform: rotateY(180deg);
+  }
+  
+  .flip-card-front,
+  .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Oculta el contenido del lado no visible */
+    transform-style: preserve-3d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+  
+  
+  .flip-card-front {
+    z-index: 2;
+  }
+  
+  .flip-card-back {
+    transform: rotateY(180deg);
+    z-index: 1;
+  }  

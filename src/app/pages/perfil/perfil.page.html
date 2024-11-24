@@ -6,23 +6,57 @@
 
 <ion-content class="ion-padding">
   <div class="center-content">
-    <img src="../../../assets/img/icon_user.png" alt="Profile Picture" class="profile-img">
+    <div class="flip-card" (click)="toggleFlip()">
+      <div class="flip-card-inner" [class.flipped]="isFlipped">
+        <!-- Lado frontal: Información del usuario -->
+        <div class="flip-card-front">
+          <ion-card *ngIf="!isEditing && usuario">
+            <ion-card-header>
+              <ion-card-title>{{ usuario.get('nombre')?.value }}</ion-card-title>
+              <ion-card-subtitle>RUT: {{ usuario.get('rut')?.value }}</ion-card-subtitle>
+              <ion-card-subtitle>{{ formatTipoUsuario(usuario.get('tipo_usuario')?.value || '') }}</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+              <p>Email: {{ usuario.get('correo')?.value }}</p>
+              <p>Teléfono: {{ usuario.get('telefono')?.value }}</p>
+            </ion-card-content>
+          </ion-card>
+        </div>
 
-    <!-- Muestra los datos del usuario si no está editando -->
-    <ion-card *ngIf="!isEditing && usuario">
-      <ion-card-header>
-        <ion-card-title>{{ usuario.get('nombre')?.value }}</ion-card-title>
-        <ion-card-subtitle>RUT: {{ usuario.get('rut')?.value }}</ion-card-subtitle>
-        <ion-card-subtitle>{{ formatTipoUsuario(usuario.get('tipo_usuario')?.value || '') }}</ion-card-subtitle>
-      </ion-card-header>
-      <ion-card-content>
-        <p>Email: {{ usuario.get('correo')?.value }}</p>
-        <p>Teléfono: {{ usuario.get('telefono')?.value }}</p>
-      </ion-card-content>
-    </ion-card>
+        <!-- Lado trasero: QR Code -->
+        <div class="flip-card-back" *ngIf="!isEditing">
+          <ion-card>
+            <ion-card-header>
+              Comparte tus datos!
+            </ion-card-header>
+            <ion-card-content>
+              <qrcode
+                [qrdata]="dataQR()"
+                [allowEmptyString]="true"
+                [ariaLabel]="'QR Code image with the following content...'"
+                [cssClass]="'center'"
+                [colorDark]="'#000000ff'"
+                [colorLight]="'#ffffffff'"
+                [elementType]="'canvas'"
+                [errorCorrectionLevel]="'M'"
+                [margin]="4"
+                [scale]="1"
+                [title]="'Datos del usuario'"
+                [width]="300"
+              ></qrcode>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </div>
+    </div> <!-- Cierre de flip-card -->
+
+    <br>
+    <br>
+    <br>
+    <br>
 
     <!-- Botón para modificar perfil -->
-    <ion-button expand="block" *ngIf="!isEditing" (click)="toggleEdit()">MODIFICAR PERFIL</ion-button>
+    <ion-button expand="block" *ngIf="!isEditing" (click)="toggleEdit()" style="margin-top: 8px;">MODIFICAR PERFIL</ion-button>
 
     <!-- Formulario de edición dentro de un card -->
     <ion-card *ngIf="isEditing">
@@ -71,5 +105,5 @@
     <!-- Botones generales -->
     <ion-button expand="block" *ngIf="!isEditing" [routerLink]="['/home/historial']">HISTORIAL DE VIAJES</ion-button>
     <ion-button expand="block" *ngIf="!isEditing" (click)="logout()">CERRAR SESION</ion-button>
-  </div>
+  </div> <!-- Cierre de center-content -->
 </ion-content>

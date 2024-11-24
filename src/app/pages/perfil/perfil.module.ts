@@ -8,13 +8,16 @@ import { PerfilPageRoutingModule } from './perfil-routing.module';
 
 import { PerfilPage } from './perfil.page';
 
+import { QRCodeModule } from 'angularx-qrcode';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    PerfilPageRoutingModule
+    PerfilPageRoutingModule,
+    QRCodeModule
   ],
   declarations: [PerfilPage]
 })
