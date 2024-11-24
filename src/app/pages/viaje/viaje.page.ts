@@ -6,6 +6,8 @@ import * as leaflet from 'leaflet';
 import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
 import { Router } from '@angular/router';
+import { FireService } from 'src/app/services/fire.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-viaje',
@@ -32,7 +34,7 @@ export class ViajePage implements OnInit {
   distanciaMetros: number = 0;
   tiempoSegundos: number = 0;
 
-  constructor(private viajeService: ViajeService, private router: Router) {}
+  constructor(private viajeService: ViajeService, private router: Router, private fireService: FireService) {}
 
   ngOnInit() {
     this.getTipoUsuario();
@@ -159,24 +161,26 @@ export class ViajePage implements OnInit {
   async cancelarViaje(viaje: any) {
     const confirmar = confirm('¿Estás seguro de que deseas cancelar este viaje?');
     if (confirmar) {
-      await this.viajeService.deleteViaje(viaje.id);
+      await this.fireService.deleteViaje(viaje.id);
       console.log('Viaje cancelado exitosamente.');
       this.getViajes();
     }
   }
 
   async getViajes() {
-    this.viajes = await this.viajeService.getViajes();
+    try {
+      this.viajes = await firstValueFrom(this.fireService.getViajes()); // Convierte el Observable en un array
+      const rutUsuario = this.usuario.rut;
   
-    // Verificar si el usuario ya tiene un viaje creado o está asociado como pasajero
-    const rutUsuario = this.usuario.rut;
+      this.tieneViaje = this.viajes.some(viaje =>
+        viaje.estudiante_conductor === rutUsuario || (viaje.pasajeros && viaje.pasajeros.includes(rutUsuario))
+      );
   
-    this.tieneViaje = this.viajes.some(viaje => 
-      viaje.estudiante_conductor === rutUsuario || (viaje.pasajeros && viaje.pasajeros.includes(rutUsuario))
-    );
-  
-    console.log('Tiene Viaje:', this.tieneViaje);  // Log para verificar
-    console.log('Tipo de Usuario:', this.tipoUsuario);  // Log para verificar
+      console.log('Tiene Viaje:', this.tieneViaje);
+      console.log('Tipo de Usuario:', this.tipoUsuario);
+    } catch (error) {
+      console.error('Error al obtener viajes:', error);
+    }
   }
 
   getTipoUsuario() {

@@ -5,6 +5,8 @@ import { ViajeService } from 'src/app/services/viaje.service';
 import * as leaflet from 'leaflet';
 import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
+import { FireService } from 'src/app/services/fire.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-modificar-viaje',
@@ -47,22 +49,23 @@ export class ModificarViajePage implements OnInit {
   constructor(
     private router: Router, 
     private route: ActivatedRoute, 
-    private viajeService: ViajeService
+    private viajeService: ViajeService,
+    private fireService: FireService
   ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.viajeId = params['id'] ? +params['id'] : undefined;
+      this.viajeId = params['id'] ? Number(params['id']) : undefined; // Mantén viajeId como number
       if (this.viajeId) {
-        this.cargarViaje(this.viajeId);
+        this.cargarViaje(this.viajeId.toString()); // Convierte a string al llamar cargarViaje
       }
     });
     this.initMapa();
   }
 
   // Cargar los datos del viaje existente para modificarlos
-  async cargarViaje(id: number) {
-    const viajeExistente = await this.viajeService.getViaje(id);
+  async cargarViaje(id: string) {
+    const viajeExistente: any = await firstValueFrom(this.fireService.getViaje(id));
     if (viajeExistente) {
       // Habilitar temporalmente el campo 'patente' para que el valor pueda ser asignado
       this.viaje.get('patente')?.enable();
@@ -149,13 +152,14 @@ export class ModificarViajePage implements OnInit {
   // Método para modificar un viaje existente
   async modificarViaje() {
     if (this.viajeId && this.viaje.valid) {
-      const resultado = await this.viajeService.updateViaje(this.viajeId, this.viaje.value);
+      const resultado = await this.fireService.updateViaje(this.viaje.value);
+  
       if (resultado) {
         console.log('Viaje modificado con éxito');
-      // Navegar a la página de viajes y refrescar la página
-      this.router.navigate(['/home/viaje']).then(() => {
-        window.location.reload();
-      });
+        // Navegar a la página de viajes y refrescar la página
+        this.router.navigate(['/home/viaje']).then(() => {
+          window.location.reload();
+        });
       } else {
         console.log('Error al modificar el viaje');
       }

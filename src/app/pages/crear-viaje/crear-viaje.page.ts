@@ -5,6 +5,7 @@ import { ViajeService } from 'src/app/services/viaje.service';
 import * as leaflet from 'leaflet';
 import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
+import { FireService } from 'src/app/services/fire.service';
 
 @Component({
   selector: 'app-crear-viaje',
@@ -44,7 +45,7 @@ export class CrearViajePage implements OnInit {
     patente: new FormControl({value: '', disabled: true}) // Patente no editable
   });
 
-  constructor(private router: Router, private viajeService: ViajeService) { }
+  constructor(private router: Router, private viajeService: ViajeService, private fireService: FireService) { }
 
   ngOnInit() {
     this.initMapa();
@@ -136,7 +137,7 @@ export class CrearViajePage implements OnInit {
       id: newId.toString()
     });
   
-    if (await this.viajeService.createViaje(this.viaje.value)) {
+    if (await this.fireService.createViaje(this.viaje.value)) {
       console.log("Viaje creado con éxito!");
       localStorage.setItem('lastViajeId', newId.toString());
   

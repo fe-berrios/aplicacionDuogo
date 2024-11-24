@@ -10,6 +10,7 @@ export class FireService {
 
   constructor(private fireStore: AngularFirestore, private fireAuth: AngularFireAuth) { }
 
+  // Usuarios(crud)
   async crearUsuario(usuario: any){
     const docRef = this.fireStore.collection('usuarios').doc(usuario.rut);
     const docActual = await docRef.get().toPromise();
@@ -50,5 +51,40 @@ export class FireService {
       console.error("Error al obtener usuario:", error);
       return null;
     })
+  }
+
+  // Viajes(crud)
+
+  async createViaje(viaje: any){
+    const docRef = this.fireStore.collection('viajes').doc(viaje.id);
+    const docActual = await docRef.get().toPromise();
+    if (docActual?.exists){
+      return false;
+    }
+
+    await docRef.set(viaje);
+    return true;
+  }
+
+  getViajes(){
+    return this.fireStore.collection('viajes').valueChanges();
+  }
+
+  getViaje(id: string){
+    return this.fireStore.collection('viajes').doc(id).valueChanges();
+  }
+
+  async updateViaje(viaje: any): Promise<boolean> {
+    try {
+      await this.fireStore.collection('viajes').doc(viaje.id).update(viaje);
+      return true; // Retorna true si la actualización fue exitosa
+    } catch (error) {
+      console.error('Error al actualizar el viaje:', error);
+      return false; // Retorna false en caso de error
+    }
+  }
+
+  deleteViaje(id: string){
+    return this.fireStore.collection('viajes').doc(id).delete();
   }
 }
