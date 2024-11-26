@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import * as leaflet from 'leaflet';
 import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
+import { firstValueFrom } from 'rxjs';
+import { FireService } from 'src/app/services/fire.service';
 import { ViajeService } from 'src/app/services/viaje.service';
 
 @Component({
@@ -11,138 +14,233 @@ import { ViajeService } from 'src/app/services/viaje.service';
   styleUrls: ['./mapa.page.scss'],
 })
 export class MapaPage implements OnInit {
-
-  // Viajes
   viajes: any[] = [];
-
-  // Variable para el RUT del usuario
   usuarioRut: string = '';
-
-  // Variable para determinar si el usuario tiene un viaje pendiente
   tieneViajePendiente: boolean = false;
-
-  // Viaje del usuario
   viajeUsuario: any;
+  botonTexto: string = 'Comenzar Viaje';
 
-  // Leaflet (mapa)
   private map: leaflet.Map | undefined;
-  private geocoder: geo.Geocoder | undefined;
   private routingControl: any;
-
-  // Coordenadas fijas de inicio (Duoc UC Puente Alto)
   private origenLat: number = -33.59838016321339;
   private origenLng: number = -70.57879780298838;
 
-  constructor(private viajeService: ViajeService, private router: Router) { }
+  constructor(
+    private viajeService: ViajeService,
+    private router: Router,
+    private fireService: FireService,
+    private alertController: AlertController
+  ) {}
 
   ngOnInit() {
-    // Inicializar el mapa
     this.initMapa();
-    
-    // Rescatar el usuario completo desde localStorage
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-    
-    // Obtener el rut del usuario
-    this.usuarioRut = usuario.rut || ''; // Asegúrate de que el rut esté disponible en el objeto usuario
-
-    // Rescatar los viajes
+    this.usuarioRut = usuario.rut || '';
     this.getViajes();
   }
 
-  // Rescatar viajes desde el servicio
   async getViajes() {
-    this.viajes = await this.viajeService.getViajes();
-
-    // Verificar si el usuario tiene un viaje pendiente
+    this.viajes = await firstValueFrom(this.fireService.getViajes());
     this.checkViajePendiente();
   }
 
-  // Verificar si el usuario tiene un viaje pendiente
   checkViajePendiente() {
-    // Buscar el viaje que corresponde al usuario actual ya sea como conductor o pasajero
-    this.viajeUsuario = this.viajes.find(viaje => 
-      viaje.estudiante_conductor === this.usuarioRut || 
-      (viaje.pasajeros && viaje.pasajeros.includes(this.usuarioRut))
+    this.viajeUsuario = this.viajes.find(
+      (viaje) =>
+        viaje.estudiante_conductor === this.usuarioRut ||
+        (viaje.pasajeros && viaje.pasajeros.includes(this.usuarioRut))
     );
-  
-    // Si el usuario tiene un viaje pendiente, muestra el mensaje y traza la ruta en el mapa
+
     if (this.viajeUsuario) {
       this.tieneViajePendiente = true;
+      this.botonTexto =
+        this.viajeUsuario.estado_viaje === 'En progreso'
+          ? 'Cancelar Viaje'
+          : 'Comenzar Viaje';
       this.mostrarRutaEnMapa();
     }
   }
-  
 
-// Mostrar la ruta del viaje en el mapa usando leaflet-routing-machine
-mostrarRutaEnMapa() {
-  // Verificar si el mapa está inicializado
-  if (!this.map) {
-    console.warn('El mapa aún no está listo.');
-    return;
-  }
+  async toggleEstadoViaje() {
+    const action =
+      this.botonTexto === 'Comenzar Viaje' ? 'iniciar' : 'cancelar';
 
-  // Verificar si el destino tiene coordenadas válidas
-  const destino = [this.viajeUsuario.latitud, this.viajeUsuario.longitud];
-  if (!destino[0] || !destino[1]) {
-    console.error('Las coordenadas de destino no están definidas.');
-    return;
-  }
+    if (action === 'cancelar') {
+      this.promptCancelarViaje();
+    } else {
+      const alert = await this.alertController.create({
+        header: `¿Estás seguro de ${action} el viaje?`,
+        buttons: [
+          {
+            text: 'No',
+            role: 'cancel',
+          },
+          {
+            text: 'Sí',
+            handler: async () => {
+              this.cambiarEstadoViaje(action === 'iniciar');
+            },
+          },
+        ],
+      });
 
-  // Remover control de ruta anterior si existe
-  if (this.routingControl) {
-    this.map.removeControl(this.routingControl);
-  }
-
-  // Crear plan de ruta personalizado
-  const plan = new leaflet.Routing.Plan(
-    [
-      leaflet.latLng(this.origenLat, this.origenLng), // Coordenadas de inicio fijas
-      leaflet.latLng(destino[0], destino[1]) // Coordenadas del destino del viaje
-    ], 
-    {
-      createMarker: () => false  // Retorna false para no crear marcadores
+      await alert.present();
     }
-  );
+  }
 
-  // Crear y añadir el control de la ruta al mapa
-  this.routingControl = leaflet.Routing.control({
-    plan: plan,
-    routeWhileDragging: true,
-    show: false,
-    addWaypoints: false,
-    lineOptions: {
-      styles: [{ color: '#ff2e17', weight: 4 }], // Estilo de la línea
-      extendToWaypoints: true,  // Extiende la línea a los puntos de ruta
-      missingRouteTolerance: 0  // Tolerancia para rutas faltantes
+  async promptCancelarViaje() {
+    const alert = await this.alertController.create({
+      header: '¿Por qué cancelas el viaje?',
+      inputs: [
+        {
+          name: 'razon',
+          type: 'textarea',
+          placeholder: 'Escribe la razón de la cancelación',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Aceptar',
+          handler: async (data) => {
+            if (data.razon) {
+              this.cambiarEstadoViaje(false, data.razon);
+            } else {
+              const errorAlert = await this.alertController.create({
+                header: 'Error',
+                message: 'Por favor, escribe una razón para cancelar el viaje.',
+                buttons: ['OK'],
+              });
+              await errorAlert.present();
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async cambiarEstadoViaje(iniciar: boolean, razonCancelacion: string = '') {
+    if (this.viajeUsuario) {
+      this.viajeUsuario.estado_viaje = iniciar ? 'En progreso' : 'Pendiente';
+      if (!iniciar) {
+        this.viajeUsuario.razon_cancelacion = razonCancelacion;
+      }
+
+      this.botonTexto = iniciar ? 'Cancelar Viaje' : 'Comenzar Viaje';
+
+      // Actualizar en Firebase
+      await this.fireService.updateViaje({
+        id: this.viajeUsuario.id,
+        estado_viaje: this.viajeUsuario.estado_viaje,
+        ...(razonCancelacion && { razon_cancelacion: razonCancelacion }),
+      });
     }
-  }).addTo(this.map);
-}
+  }
 
+  async finalizarViaje() {
+    const alert = await this.alertController.create({
+      header: '¿Estás seguro de finalizar el viaje?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+        },
+        {
+          text: 'Sí',
+          handler: async () => {
+            if (this.viajeUsuario) {
+              this.viajeUsuario.estado_viaje = 'Finalizado';
+              this.tieneViajePendiente = false;
 
-  // Inicializar el mapa con Leaflet
+              // Actualizar en Firebase
+              await this.fireService.updateViaje({
+                id: this.viajeUsuario.id,
+                estado_viaje: 'Finalizado',
+              });
+
+              // Mensaje de éxito
+              const successAlert = await this.alertController.create({
+                header: 'Éxito',
+                message: 'El viaje ha sido finalizado.',
+                buttons: ['OK'],
+              });
+              await successAlert.present();
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  mostrarRutaEnMapa() {
+    if (!this.map) {
+      console.warn('El mapa aún no está listo.');
+      return;
+    }
+
+    const destino = [this.viajeUsuario.latitud, this.viajeUsuario.longitud];
+    if (!destino[0] || !destino[1]) {
+      console.error('Las coordenadas de destino no están definidas.');
+      return;
+    }
+
+    if (this.routingControl) {
+      this.map.removeControl(this.routingControl);
+    }
+
+    const plan = new leaflet.Routing.Plan(
+      [
+        leaflet.latLng(this.origenLat, this.origenLng),
+        leaflet.latLng(destino[0], destino[1]),
+      ],
+      {
+        createMarker: () => false,
+      }
+    );
+
+    this.routingControl = leaflet.Routing.control({
+      plan: plan,
+      routeWhileDragging: true,
+      show: false,
+      addWaypoints: false,
+      lineOptions: {
+        styles: [{ color: '#ff2e17', weight: 4 }],
+        extendToWaypoints: true,
+        missingRouteTolerance: 0,
+      },
+    }).addTo(this.map);
+  }
+
   initMapa() {
-    // Inicializar el mapa con un retraso para asegurar que todos los elementos están listos
     setTimeout(() => {
       if (this.map) {
         return;
       }
-  
-      // Inicializar el mapa centrado en la ubicación deseada
+
       this.map = leaflet.map('map_map', {
         zoomControl: false,
-        center: leaflet.latLng(this.origenLat, this.origenLng),  // Centrado en el origen
-        zoom: 16, // Nivel de zoom
+        center: leaflet.latLng(this.origenLat, this.origenLng),
+        zoom: 16,
       });
-  
-      // Cargar las capas de OpenStreetMap
+
       leaflet
-        .tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
-        })
+        .tileLayer(
+          'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+          {
+            maxZoom: 19,
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>',
+          }
+        )
         .addTo(this.map);
-  
-      // Llamar a mostrarRutaEnMapa si el usuario tiene un viaje pendiente
+
       if (this.tieneViajePendiente) {
         this.mostrarRutaEnMapa();
       }

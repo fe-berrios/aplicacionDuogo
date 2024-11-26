@@ -16,12 +16,12 @@
       </ion-item>
       <br>
       <ion-button color="warning" expand="full" fill="outline" shape="round"
-                  (click)="validarCorreo(emailInput.value)">
-        Enviar código de recuperación
+                  (click)="recuperarContrasena(emailInput.value ? emailInput.value.toString() : '')">
+        Enviar correo de recuperación
       </ion-button>
       
-      <!-- Mostrar mensaje de error si existe -->
-      <ion-text *ngIf="mensaje" color="danger">
+      <!-- Mostrar mensaje de éxito o error -->
+      <ion-text *ngIf="mensaje" [color]="mensajeColor">
         {{ mensaje }}
       </ion-text>
     </ion-card-content>

@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { firstValueFrom } from 'rxjs';
+import { AlertController } from '@ionic/angular';
+import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FireService {
 
-  constructor(private fireStore: AngularFirestore, private fireAuth: AngularFireAuth) { }
+  constructor(private fireStore: AngularFirestore, 
+              private fireAuth: AngularFireAuth,
+              private alertController: AlertController) { }
 
   // Usuarios(crud)
   async crearUsuario(usuario: any){
@@ -66,7 +69,7 @@ export class FireService {
     return true;
   }
 
-  getViajes(){
+  getViajes(): Observable<any[]>{
     return this.fireStore.collection('viajes').valueChanges();
   }
 
@@ -86,5 +89,36 @@ export class FireService {
 
   deleteViaje(id: string){
     return this.fireStore.collection('viajes').doc(id).delete();
+  }
+
+  // Recuperar contraseña
+  async recuperarContrasena(email: string): Promise<void> {
+    try {
+      await this.fireAuth.sendPasswordResetEmail(email);
+      const alert = await this.alertController.create({
+        header: 'Éxito',
+        message: 'Se ha enviado un correo para restablecer tu contraseña.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+    } catch (error: any) {
+      const alert = await this.alertController.create({
+        header: 'Error',
+        message: this.obtenerMensajeError(error.code),
+        buttons: ['OK'],
+      });
+      await alert.present();
+    }
+  }
+
+  private obtenerMensajeError(codigo: string): string {
+    switch (codigo) {
+      case 'auth/user-not-found':
+        return 'No existe un usuario con este correo.';
+      case 'auth/invalid-email':
+        return 'El correo ingresado no es válido.';
+      default:
+        return 'Ocurrió un error inesperado. Intenta nuevamente.';
+    }
   }
 }

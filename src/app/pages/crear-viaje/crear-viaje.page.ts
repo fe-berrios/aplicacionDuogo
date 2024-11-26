@@ -36,6 +36,7 @@ export class CrearViajePage implements OnInit {
     tiempo_segundos: new FormControl(''),
     forma_pago: new FormControl('', [Validators.required]),
     estado_viaje: new FormControl(''),
+    razon_cancelacion: new FormControl(''),
     hora_salida: new FormControl('', [
       Validators.required,
       Validators.pattern('^([01]?[0-9]|2[0-3]):[0-5][0-9]$')

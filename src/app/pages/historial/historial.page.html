@@ -69,7 +69,36 @@
         </ion-row>
       </ion-grid>
 
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <p><strong>Razón cancelacion:</strong></p>
+              {{ viaje.razon_cancelacion }}
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
     </ion-card-content>
   </ion-card>
+
+  <ion-card *ngIf="fabricantes.length > 0">
+    <ion-card-header>
+      <ion-card-title>Lista de Fabricantes</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let fabricante of fabricantes">
+          <ion-label>
+            <h2>{{ fabricante[0].name }}</h2>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Mostrar mensaje de error -->
+  <ion-text *ngIf="errorMessage" color="danger">
+    {{ errorMessage }}
+  </ion-text>
 
 </ion-content>
