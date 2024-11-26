@@ -6,6 +6,7 @@ import * as leaflet from 'leaflet';
 import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
 import { FireService } from 'src/app/services/fire.service';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-crear-viaje',
@@ -25,6 +26,9 @@ export class CrearViajePage implements OnInit {
   distanciaMetros: number = 0;
   tiempoSegundos: number = 0;
 
+  // API
+  dolar: number = 0;
+
   viaje = new FormGroup({
     id: new FormControl(''),
     estudiante_conductor: new FormControl(''),
@@ -43,13 +47,18 @@ export class CrearViajePage implements OnInit {
     ]),
     pasajeros: new FormControl(''),
     costo: new FormControl('', [Validators.required, Validators.min(0)]),
+    costo_dolar: new FormControl('', []),
     patente: new FormControl({value: '', disabled: true}) // Patente no editable
   });
 
-  constructor(private router: Router, private viajeService: ViajeService, private fireService: FireService) { }
+  constructor(private router: Router, 
+              private viajeService: ViajeService, 
+              private fireService: FireService,
+              private apiService: ApiService) { }
 
   ngOnInit() {
     this.initMapa();
+    this.dolarAPI();
 
     const usuarioConductor = localStorage.getItem('usuario');
 
@@ -105,10 +114,15 @@ export class CrearViajePage implements OnInit {
             }).on('routesfound', (e) => {
               this.distanciaMetros = e.routes[0].summary.totalDistance;
               this.tiempoSegundos = e.routes[0].summary.totalTime;
+
+              const costo = Math.floor(this.distanciaMetros / 200) * 200;
+              const costoDolar = this.dolar > 0 ? (costo / this.dolar).toFixed(2) : '0';
       
               this.viaje.patchValue({
                 distancia_metros: this.distanciaMetros.toString(),
-                tiempo_segundos: this.tiempoSegundos.toString()
+                tiempo_segundos: this.tiempoSegundos.toString(),
+                costo: costo.toString(),
+                costo_dolar: costoDolar
               });
             }).addTo(this.map);
           }
@@ -152,5 +166,11 @@ export class CrearViajePage implements OnInit {
     } else {
       console.log("Error! No se pudo crear el viaje");
     }
-  }  
+  }
+  
+  dolarAPI(){
+    this.apiService.getDolar().subscribe((data:any)=>{
+      this.dolar = data.dolar.valor;
+    })
+  }
 }

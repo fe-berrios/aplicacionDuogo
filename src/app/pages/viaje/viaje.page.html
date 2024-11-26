@@ -40,7 +40,11 @@
         <ion-label>
           <p><strong>Conductor:</strong> {{viaje.estudiante_conductor}}</p>
           <p><strong>Estado:</strong> {{viaje.estado_viaje}}</p>
-          <p><strong>Costo:</strong> {{ viaje.costo | currency:'CLP ':'symbol':'1.0-0' }}</p>
+          <p>
+            <strong>Costo:</strong> 
+            <em>{{ viaje.costo | currency:'CLP ':'symbol':'1.0-0' }}</em> 
+            ({{ viaje.costo_dolar | currency:'USD':'symbol':'1.0-2' }} dólares)
+          </p>
         </ion-label>
       </ion-item>
 

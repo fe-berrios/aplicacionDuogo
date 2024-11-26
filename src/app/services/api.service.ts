@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -6,18 +6,16 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private apiKey: string = 'BYAe/7Uid7Z8PLnN6IyGUg==bfjuXEusaLUEtP60';
-  private baseUrl: string = 'https://private-anon-cc6e00aed5-carsapi1.apiary-mock.com/';
+  private dolarURL: string = 'https://mindicador.cl/api';
+  private gatoURL: string = 'https://api.thecatapi.com/v1/images/search';
 
   constructor(private http: HttpClient) { }
 
-  getManufacturers(): Observable<any> {
-    const headers = new HttpHeaders({
-      'Authorization': 'Bearer YOUR_API_KEY', // Cambia por tu API Key si es necesaria
-    });
-
-    const url = `${this.baseUrl}/manufacturers`;
-    return this.http.get(url, { headers });
+  getGato(){
+    return this.http.get(this.gatoURL);
   }
 
+  getDolar(){
+    return this.http.get(this.dolarURL);
+  }
 }

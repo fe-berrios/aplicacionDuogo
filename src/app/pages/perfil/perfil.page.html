@@ -12,6 +12,9 @@
         <div class="flip-card-front">
           <ion-card *ngIf="!isEditing && usuario">
             <ion-card-header>
+              <div class="profile-image">
+                <img *ngIf="usuario.get('imagen_api')?.value" [src]="usuario.get('imagen_api')?.value" alt="Imagen de perfil" />
+              </div>
               <ion-card-title>{{ usuario.get('nombre')?.value }}</ion-card-title>
               <ion-card-subtitle>RUT: {{ usuario.get('rut')?.value }}</ion-card-subtitle>
               <ion-card-subtitle>{{ formatTipoUsuario(usuario.get('tipo_usuario')?.value || '') }}</ion-card-subtitle>
@@ -106,4 +109,5 @@
     <ion-button expand="block" *ngIf="!isEditing" [routerLink]="['/home/historial']">HISTORIAL DE VIAJES</ion-button>
     <ion-button expand="block" *ngIf="!isEditing" (click)="logout()">CERRAR SESION</ion-button>
   </div> <!-- Cierre de center-content -->
+
 </ion-content>

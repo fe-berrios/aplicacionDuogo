@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, Valid
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { control } from 'leaflet';
+import { ApiService } from 'src/app/services/api.service';
 import { FireService } from 'src/app/services/fire.service';
 import { UsuarioService } from 'src/app/services/usuario.service';
 
@@ -16,6 +17,7 @@ import { UsuarioService } from 'src/app/services/usuario.service';
 
 export class RegistroPage implements OnInit { 
   usuarios: any[] = [];
+  perfilGato: string = "";
 
   usuario = new FormGroup({
     rut: new FormControl('',[
@@ -55,17 +57,20 @@ export class RegistroPage implements OnInit {
     patente: new FormControl({ value: '', disabled: true}, [
       this.validarPatenteChilena()
     ]),
-    esConductor: new FormControl(false) // Control para el checkbox
+    esConductor: new FormControl(false), // Control para el checkbox
+    imagen_api: new FormControl('',[])
   });
 
   constructor(private usuarioService: UsuarioService, 
               private router: Router, 
               private alertController: AlertController,
-              private fireService: FireService) {
+              private fireService: FireService,
+              private apiService: ApiService) {
       this.usuario.get("rut")?.setValidators([Validators.required,Validators.pattern("[0-9]{7,8}-[0-9kK]{1}"),this.validarRut()]);
    }
 
    ngOnInit() {
+    this.perfilGatoAPI();
     // Observa cambios en el campo esConductor para aplicar o quitar validaciones
     this.usuario.get('esConductor')?.valueChanges.subscribe(isConductor => {
       if (isConductor) {
@@ -169,6 +174,14 @@ export class RegistroPage implements OnInit {
       const esValida = patentePattern.test(control.value?.toUpperCase());
       return esValida ? null : {patenteInvalida: true};
     };
+  }
+
+  perfilGatoAPI(){
+    this.apiService.getGato().subscribe((data:any)=>{
+      console.log(data[0].url);
+      this.perfilGato = data[0].url;
+      this.usuario.patchValue({ imagen_api: this.perfilGato });
+    })
   }
 
 }

@@ -25,7 +25,6 @@ export class HistorialPage implements OnInit {
   ngOnInit() {
     this.getUsuario();
     this.getViajesUsuario();
-    this.obtenerFabricantes();
   }
 
   // Rescatar usuario desde localStorage
@@ -44,16 +43,4 @@ export class HistorialPage implements OnInit {
     );
   }
 
-  obtenerFabricantes() {
-    this.apiService.getManufacturers().subscribe({
-      next: (data) => {
-        this.fabricantes = data.filter((fabricante: any) => fabricante.name); // Filtrar elementos con 'name'
-        console.log('Fabricantes procesados:', this.fabricantes);
-      },
-      error: (error) => {
-        console.error('Error al obtener fabricantes:', error);
-        this.errorMessage = 'Error al cargar la lista de fabricantes.';
-      },
-    });
-  }
 }

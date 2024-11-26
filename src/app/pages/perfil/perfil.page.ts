@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from 'src/app/services/usuario.service';
 import { NavController } from '@ionic/angular';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-perfil',
@@ -11,6 +12,8 @@ import { NavController } from '@ionic/angular';
 export class PerfilPage implements OnInit {
   isEditing: boolean = false;  // Controla si está en modo de edición o no
   isFlipped = false;
+
+  datos: string = "";
 
   usuario = new FormGroup({
     rut: new FormControl({ value: '', disabled: true }, [
@@ -47,9 +50,12 @@ export class PerfilPage implements OnInit {
       Validators.pattern("^[0-9]*$") // Solo habilitado si es 'estudiante_conductor'
     ]),
     patente: new FormControl('',[]),
+    imagen_api: new FormControl('', [])
   });
 
-  constructor(private navController: NavController, private usuarioService: UsuarioService) {}
+  constructor(private navController: NavController, 
+              private usuarioService: UsuarioService,
+              private apiService: ApiService) {}
 
   ngOnInit() {
     const usuarioSesion = localStorage.getItem('usuario');
@@ -62,6 +68,7 @@ export class PerfilPage implements OnInit {
         this.toggleAutoFields(tipoUsuario);  // Ahora el valor siempre será de tipo string
       });
     }
+    console.log(this.usuario.value)
   }
   
   toggleFlip(): void {
