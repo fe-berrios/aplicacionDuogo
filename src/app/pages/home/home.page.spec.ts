@@ -6,7 +6,7 @@ import { HomePage } from './home.page';
 import { UsuarioService } from 'src/app/services/usuario.service'; // Importar el servicio UsuarioService
 import { Storage } from '@ionic/storage-angular'; // Importar Storage
 
-describe('Página de Home', () => {
+describe('Página de home', () => {
   let component: HomePage;
   let fixture: ComponentFixture<HomePage>;
 
@@ -61,7 +61,7 @@ describe('Página de Home', () => {
     expect(component.usuario.nombre).toEqual("Administrador");
   });
 
-  it('3. Validar el usuario completo', () => {
+  it('3. Verificar al usuario completo', () => {
     expect(localStorage.getItem).toHaveBeenCalledWith('usuario');
     expect(component.usuario).toEqual({
       rut: "10200300-4",

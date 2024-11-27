@@ -8,7 +8,7 @@ import { of } from 'rxjs';
 import { Storage } from '@ionic/storage-angular';
 import { IonicStorageModule } from '@ionic/storage-angular';
 
-describe('Página de Mapa', () => {
+describe('Página de mapa', () => {
   let component: MapaPage;
   let fixture: ComponentFixture<MapaPage>;
   let fireServiceSpy: jasmine.SpyObj<FireService>;
