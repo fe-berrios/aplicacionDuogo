@@ -62,7 +62,7 @@ export class RegistroPage implements OnInit {
   });
 
   constructor(private usuarioService: UsuarioService, 
-              private router: Router, 
+              public router: Router, 
               private alertController: AlertController,
               private fireService: FireService,
               private apiService: ApiService) {
