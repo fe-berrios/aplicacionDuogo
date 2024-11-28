@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AlertController } from '@ionic/angular';
+import { first, firstValueFrom } from 'rxjs';
 import { FireService } from 'src/app/services/fire.service';
 import { UsuarioService } from 'src/app/services/usuario.service';
 import { ViajeService } from 'src/app/services/viaje.service';
@@ -73,6 +74,7 @@ export class AdministrarPage implements OnInit {
     tiempo_segundos: new FormControl(''),
     forma_pago: new FormControl('', [Validators.required]),
     estado_viaje: new FormControl(''),
+    razon_cancelacion: new FormControl(''),
     hora_salida: new FormControl('', [
       Validators.required,
       Validators.pattern('^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
@@ -101,7 +103,7 @@ export class AdministrarPage implements OnInit {
     });
 
     // Cargar los usuarios al iniciar
-    this.usuarios = await this.usuarioService.getUsuarios();
+    this.usuarios = await firstValueFrom(this.fireService.getUsuarios());
   }
 
   // Mostrar Usuarios
@@ -112,7 +114,7 @@ export class AdministrarPage implements OnInit {
   // Mostrar Viajes y cargar lista de viajes
   async mostrarViajes() {
     this.modoAdministracion = 'viajes';
-    this.viajes = await this.viajeService.getViajes(); // Cargar la lista de viajes
+    this.viajes = await firstValueFrom(this.fireService.getViajes()); // Cargar la lista de viajes
 
     // Asegurar que la propiedad pasajeros sea siempre un array
     this.viajes.forEach(viaje => {
@@ -133,20 +135,9 @@ export class AdministrarPage implements OnInit {
     }
   }
 
-
-  // CRUD Usuarios
-  async createUsuario() {
-    if (await this.usuarioService.createUsuario(this.persona.value)) {
-      alert('Usuario creado con éxito!');
-      this.persona.reset();
-    } else {
-      alert('Error al crear usuario.');
-    }
-  }
-
   async updateUsuario() {
     const rut = this.persona.controls.rut.value || '';
-    if (await this.usuarioService.updateUsuario(rut, this.persona.value)) {
+    if (await this.fireService.updateUsuario(this.persona.value)) {
       alert('Usuario actualizado con éxito!');
     } else {
       alert('Error al actualizar usuario.');
@@ -154,7 +145,7 @@ export class AdministrarPage implements OnInit {
   }
 
   async deleteUsuario(rut: string) {
-    if (await this.usuarioService.deleteUsuario(rut)) {
+    if (await this.fireService.deleteUsuario(rut)) {
       alert('Usuario eliminado con éxito!');
     } else {
       alert('Error al eliminar usuario.');
@@ -162,17 +153,24 @@ export class AdministrarPage implements OnInit {
   }
 
   // Obtener un usuario específico para editarlo
-  async getUsuario(rut: string) {
-    const usuario = await this.usuarioService.getUsuario(rut);
-    if (usuario) {
-      this.persona.patchValue({
-        ...usuario,
-        patente: usuario.patente || '', // Asegurar que 'patente' esté presente
-        esConductor: usuario.tipo_usuario === 'estudiante_conductor'
-      });
-    } else {
-      alert('Usuario no encontrado');
-    }
+  getUsuario(rut: string) {
+    this.fireService.getUsuario(rut).subscribe({
+      next: (usuario: any) => {
+        if (usuario) {
+          this.persona.patchValue({
+            ...usuario,
+            patente: usuario['patente'] || '', // Asegurar 'patente' opcional
+            esConductor: usuario['tipo_usuario'] === 'estudiante_conductor'
+          });
+        } else {
+          alert('Usuario no encontrado');
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener usuario:', error);
+        alert('Ocurrió un error al buscar el usuario.');
+      },
+    });
   }
 
   usuarioDrop(rut: string) {
@@ -181,7 +179,7 @@ export class AdministrarPage implements OnInit {
 
   // CRUD Viajes
   async createViaje() {
-    if (await this.viajeService.createViaje(this.viaje.value)) {
+    if (await this.fireService.createViaje(this.viaje.value)) {
       alert('Viaje creado con éxito!');
       this.viaje.reset();
     } else {
@@ -191,15 +189,15 @@ export class AdministrarPage implements OnInit {
 
   async updateViaje() {
     const id = Number(this.viaje.controls.id.value) || 0; // Convertir a número
-    if (await this.viajeService.updateViaje(id, this.viaje.value)) {
+    if (await this.fireService.updateViaje(this.viaje.value)) {
       alert('Viaje actualizado con éxito!');
     } else {
       alert('Error al actualizar viaje.');
     }
   }
 
-  async deleteViaje(id: number) {
-    if (await this.viajeService.deleteViaje(id)) {
+  async deleteViaje(id: string) {
+    if (await this.fireService.deleteViaje(id)) {
       alert('Viaje eliminado con éxito!');
     } else {
       alert('Error al eliminar viaje.');
@@ -207,12 +205,33 @@ export class AdministrarPage implements OnInit {
   }
 
   // Obtener un viaje específico para editarlo
-  async getViaje(id: number) {
-    const viaje = await this.viajeService.getViaje(id);
-    if (viaje) {
-      this.viaje.setValue(viaje);
-    } else {
-      alert('Viaje no encontrado');
+  async getViaje(id: string) {
+    try {
+      const viaje: any = await firstValueFrom(this.fireService.getViaje(id)); // Convertir Observable a Promise
+      if (viaje) {
+        this.viaje.setValue({
+          id: viaje.id || null,
+          estudiante_conductor: viaje.estudiante_conductor || null,
+          asientos_disponibles: viaje.asientos_disponibles || null,
+          nombre_destino: viaje.nombre_destino || null,
+          latitud: viaje.latitud || null,
+          longitud: viaje.longitud || null,
+          costo: viaje.costo || null,
+          estado_viaje: viaje.estado_viaje || null,
+          razon_cancelacion: viaje.razon_cancelacion || null,
+          forma_pago: viaje.forma_pago || null,
+          hora_salida: viaje.hora_salida || null,
+          pasajeros: viaje.pasajeros || null,
+          patente: viaje.patente || null,
+          distancia_metros: viaje.distancia_metros || 0, // Valor predeterminado
+          tiempo_segundos: viaje.tiempo_segundos || 0, // Valor predeterminado
+        });
+      } else {
+        alert('Viaje no encontrado');
+      }
+    } catch (error) {
+      console.error('Error al obtener el viaje:', error);
+      alert('Ocurrió un error al buscar el viaje.');
     }
   }
 

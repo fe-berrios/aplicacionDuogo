@@ -36,11 +36,11 @@ export class FireService {
     return this.fireStore.collection('usuarios').doc(rut).valueChanges();
   }
 
-  updateUsuario(usuario: any){
+  updateUsuario(usuario: any): Promise<any>{
     return this.fireStore.collection('usuarios').doc(usuario.rut).update(usuario);
   }
 
-  deleteUsuario(rut: string){
+  deleteUsuario(rut: string): Promise<any>{
     return this.fireStore.collection('usuarios').doc(rut).delete();
   }
 
@@ -87,7 +87,7 @@ export class FireService {
     }
   }
 
-  deleteViaje(id: string){
+  deleteViaje(id: string): Promise<any>{
     return this.fireStore.collection('viajes').doc(id).delete();
   }
 
