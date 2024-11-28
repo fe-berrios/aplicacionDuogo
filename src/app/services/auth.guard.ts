@@ -4,18 +4,22 @@ import { NavController } from '@ionic/angular';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const navController = inject(NavController);
-  const usuario = localStorage.getItem("usuario");
+  const usuario = localStorage.getItem('usuario');
   const isAuthenticated = !!usuario; // Usuario autenticado si existe en localStorage
   const userType = usuario ? JSON.parse(usuario).tipo_usuario : null;
 
-  // Si el usuario está autenticado y está intentando acceder a rutas públicas
-  if (isAuthenticated && ['/login', '/registro', '/espera', '/recuperar', '/olvido'].includes(state.url)) {
-    navController.navigateRoot('/home');
-    return false;
+  // Rutas públicas (permitir acceso solo si no está autenticado)
+  const publicRoutes = ['/login', '/registro', '/recuperar', '/olvido', '/espera'];
+  if (publicRoutes.includes(state.url)) {
+    if (isAuthenticated) {
+      navController.navigateRoot('/home');
+      return false;
+    }
+    return true; // Permitir acceso si no está autenticado
   }
 
-  // Redirigir al login si no está autenticado y no está en la ruta de login
-  if (!isAuthenticated && state.url !== '/login') {
+  // Rutas protegidas (requieren autenticación)
+  if (!isAuthenticated) {
     navController.navigateRoot('/login');
     return false;
   }
