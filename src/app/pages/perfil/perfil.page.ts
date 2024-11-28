@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from 'src/app/services/usuario.service';
 import { NavController } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api.service';
+import { FireService } from 'src/app/services/fire.service';
 
 @Component({
   selector: 'app-perfil',
@@ -55,7 +56,8 @@ export class PerfilPage implements OnInit {
 
   constructor(private navController: NavController, 
               private usuarioService: UsuarioService,
-              private apiService: ApiService) {}
+              private apiService: ApiService,
+              private fireService: FireService) {}
 
   ngOnInit() {
     const usuarioSesion = localStorage.getItem('usuario');

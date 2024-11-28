@@ -45,175 +45,129 @@ export class MapaPage implements OnInit {
   }
 
   checkViajePendiente() {
-    this.viajeUsuario = this.viajes.find(
+    if (!this.usuarioRut) return;
+  
+    // Filtrar viajes donde el usuario sea conductor o pasajero
+    const viajesUsuario = this.viajes.filter(
       (viaje) =>
         viaje.estudiante_conductor === this.usuarioRut ||
         (viaje.pasajeros && viaje.pasajeros.includes(this.usuarioRut))
     );
-
+  
+    // Encontrar el viaje que esté en estado 'Pendiente' o 'En progreso'
+    this.viajeUsuario = viajesUsuario.find(
+      (viaje) => viaje.estado_viaje === 'Pendiente' || viaje.estado_viaje === 'En progreso'
+    );
+  
+    // Si hay un viaje pendiente o en progreso
     if (this.viajeUsuario) {
+      const estado = this.viajeUsuario.estado_viaje;
       this.tieneViajePendiente = true;
-      this.botonTexto =
-        this.viajeUsuario.estado_viaje === 'En progreso'
-          ? 'Cancelar Viaje'
-          : 'Comenzar Viaje';
-      this.mostrarRutaEnMapa();
+      this.botonTexto = estado === 'En progreso' ? 'Finalizar Viaje' : 'Comenzar Viaje';
+    } else {
+      // Si no hay viajes pendientes o en progreso
+      this.tieneViajePendiente = false;
     }
+  }
+  
+  // Verificar si el usuario es el conductor asignado
+  esConductorDelViaje(): boolean {
+    return this.viajeUsuario?.estudiante_conductor === this.usuarioRut;
   }
 
   async toggleEstadoViaje() {
-    const action =
-      this.botonTexto === 'Comenzar Viaje' ? 'iniciar' : 'cancelar';
-
-    if (action === 'cancelar') {
-      this.promptCancelarViaje();
-    } else {
-      const alert = await this.alertController.create({
-        header: `¿Estás seguro de ${action} el viaje?`,
-        buttons: [
-          {
-            text: 'No',
-            role: 'cancel',
-          },
-          {
-            text: 'Sí',
-            handler: async () => {
-              this.cambiarEstadoViaje(action === 'iniciar');
-            },
-          },
-        ],
-      });
-
-      await alert.present();
-    }
-  }
-
-  async promptCancelarViaje() {
+    if (!this.viajeUsuario) return;
+  
+    const esInicio = this.botonTexto === 'Comenzar Viaje';
     const alert = await this.alertController.create({
-      header: '¿Por qué cancelas el viaje?',
-      inputs: [
-        {
-          name: 'razon',
-          type: 'textarea',
-          placeholder: 'Escribe la razón de la cancelación',
-        },
-      ],
+      header: esInicio ? 'Iniciar Viaje' : 'Finalizar Viaje',
+      message: `¿Estás seguro de ${esInicio ? 'iniciar' : 'finalizar'} este viaje?`,
       buttons: [
+        { text: 'No', role: 'cancel' },
         {
-          text: 'Cancelar',
-          role: 'cancel',
-        },
-        {
-          text: 'Aceptar',
-          handler: async (data) => {
-            if (data.razon) {
-              this.cambiarEstadoViaje(false, data.razon);
+          text: 'Sí',
+          handler: async () => {
+            if (esInicio) {
+              await this.cambiarEstadoViaje(true);
             } else {
-              const errorAlert = await this.alertController.create({
-                header: 'Error',
-                message: 'Por favor, escribe una razón para cancelar el viaje.',
-                buttons: ['OK'],
-              });
-              await errorAlert.present();
+              await this.finalizarViaje();
             }
           },
         },
       ],
     });
-
+  
     await alert.present();
   }
 
-  async cambiarEstadoViaje(iniciar: boolean, razonCancelacion: string = '') {
+  async cambiarEstadoViaje(iniciar: boolean) {
     if (this.viajeUsuario) {
-      this.viajeUsuario.estado_viaje = iniciar ? 'En progreso' : 'Pendiente';
-      if (!iniciar) {
-        this.viajeUsuario.razon_cancelacion = razonCancelacion;
-      }
-
-      this.botonTexto = iniciar ? 'Cancelar Viaje' : 'Comenzar Viaje';
-
+      this.viajeUsuario.estado_viaje = iniciar ? 'En progreso' : 'Finalizado';
+      this.botonTexto = iniciar ? 'Finalizar Viaje' : 'Comenzar Viaje';
+  
       // Actualizar en Firebase
       await this.fireService.updateViaje({
         id: this.viajeUsuario.id,
         estado_viaje: this.viajeUsuario.estado_viaje,
-        ...(razonCancelacion && { razon_cancelacion: razonCancelacion }),
       });
+  
+      if (iniciar) {
+        this.mostrarRutaEnMapa();
+      } else {
+        this.tieneViajePendiente = false;
+      }
     }
   }
 
   async finalizarViaje() {
-    const alert = await this.alertController.create({
-      header: '¿Estás seguro de finalizar el viaje?',
-      buttons: [
-        {
-          text: 'No',
-          role: 'cancel',
-        },
-        {
-          text: 'Sí',
-          handler: async () => {
-            if (this.viajeUsuario) {
-              this.viajeUsuario.estado_viaje = 'Finalizado';
-              this.tieneViajePendiente = false;
-
-              // Actualizar en Firebase
-              await this.fireService.updateViaje({
-                id: this.viajeUsuario.id,
-                estado_viaje: 'Finalizado',
-              });
-
-              // Mensaje de éxito
-              const successAlert = await this.alertController.create({
-                header: 'Éxito',
-                message: 'El viaje ha sido finalizado.',
-                buttons: ['OK'],
-              });
-              await successAlert.present();
-            }
-          },
-        },
-      ],
+    if (!this.viajeUsuario) return;
+  
+    this.viajeUsuario.estado_viaje = 'Finalizado';
+    this.tieneViajePendiente = false;
+  
+    // Actualizar en Firebase
+    await this.fireService.updateViaje({
+      id: this.viajeUsuario.id,
+      estado_viaje: 'Finalizado',
     });
-
-    await alert.present();
+  
+    // Mostrar mensaje de éxito
+    const successAlert = await this.alertController.create({
+      header: 'Éxito',
+      message: 'El viaje ha sido finalizado.',
+      buttons: ['OK'],
+    });
+    await successAlert.present();
   }
 
   mostrarRutaEnMapa() {
-    if (!this.map) {
-      console.warn('El mapa aún no está listo.');
+    if (!this.map || !this.viajeUsuario) {
+      console.warn('El mapa o el viaje no están listos.');
       return;
     }
-
+  
     const destino = [this.viajeUsuario.latitud, this.viajeUsuario.longitud];
     if (!destino[0] || !destino[1]) {
       console.error('Las coordenadas de destino no están definidas.');
       return;
     }
-
+  
     if (this.routingControl) {
       this.map.removeControl(this.routingControl);
     }
-
-    const plan = new leaflet.Routing.Plan(
-      [
+  
+    this.routingControl = leaflet.Routing.control({
+      waypoints: [
         leaflet.latLng(this.origenLat, this.origenLng),
         leaflet.latLng(destino[0], destino[1]),
       ],
-      {
-        createMarker: () => false,
-      }
-    );
-
-    this.routingControl = leaflet.Routing.control({
-      plan: plan,
       routeWhileDragging: true,
       show: false,
       addWaypoints: false,
       lineOptions: {
         styles: [{ color: '#ff2e17', weight: 4 }],
         extendToWaypoints: true,
-        missingRouteTolerance: 0,
+        missingRouteTolerance: 1,
       },
     }).addTo(this.map);
   }

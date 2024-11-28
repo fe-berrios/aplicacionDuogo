@@ -34,6 +34,10 @@ export class ViajePage implements OnInit {
   distanciaMetros: number = 0;
   tiempoSegundos: number = 0;
 
+  // Viajes
+  viajesAsignados: any[] = [];
+  viajesDisponibles: any[] = [];
+
   constructor(private viajeService: ViajeService, private router: Router, private fireService: FireService) {}
 
   ngOnInit() {
@@ -109,25 +113,32 @@ export class ViajePage implements OnInit {
 
   unirme(viaje: any) {
     const rutUsuario = this.usuario.rut;
-
-    // Verificar si el usuario ya está asociado a algún viaje
-    const yaAsociado = this.viajes.some(v =>
-      v.estudiante_conductor === rutUsuario || (v.pasajeros && v.pasajeros.includes(rutUsuario))
+  
+    // Filtrar viajes donde el usuario está asociado
+    const viajesAsociados = this.viajes.filter(
+      v =>
+        v.estudiante_conductor === rutUsuario || (v.pasajeros && v.pasajeros.includes(rutUsuario))
     );
-
-    if (yaAsociado) {
-      console.log('No puedes unirte a este viaje porque ya estás asociado a otro viaje.');
+  
+    // Verificar si hay algún viaje en estado 'Pendiente' o 'En progreso'
+    const tieneViajeActivo = viajesAsociados.some(
+      v => v.estado_viaje === 'Pendiente' || v.estado_viaje === 'En progreso'
+    );
+  
+    if (tieneViajeActivo) {
+      console.log('No puedes unirte a este viaje porque ya estás asociado a un viaje activo.');
       return;
     }
-
+  
+    // Si no hay viajes activos, unirse al viaje
     if (!viaje.pasajeros) {
       viaje.pasajeros = [];
     }
-
+  
     viaje.pasajeros.push(rutUsuario);
     viaje.asientos_disponibles -= 1;
-
-    this.viajeService.updateViaje(viaje.id, viaje).then(() => {
+  
+    this.fireService.updateViaje(viaje).then(() => {
       console.log('Te has unido al viaje exitosamente.');
       this.router.navigate(['/home/mapa']);
     }).catch((error) => {
@@ -143,7 +154,7 @@ export class ViajePage implements OnInit {
       viaje.pasajeros.splice(index, 1);
       viaje.asientos_disponibles += 1;
 
-      this.viajeService.updateViaje(viaje.id, viaje).then(() => {
+      this.fireService.updateViaje(viaje).then(() => {
         console.log('Has abandonado el viaje exitosamente.');
         this.getViajes();
       }).catch((error) => {
@@ -169,17 +180,47 @@ export class ViajePage implements OnInit {
 
   async getViajes() {
     try {
-      this.viajes = await firstValueFrom(this.fireService.getViajes()); // Convierte el Observable en un array
+      this.viajes = await firstValueFrom(this.fireService.getViajes()); // Obtener viajes desde Firebase
       const rutUsuario = this.usuario.rut;
   
-      this.tieneViaje = this.viajes.some(viaje =>
-        viaje.estudiante_conductor === rutUsuario || (viaje.pasajeros && viaje.pasajeros.includes(rutUsuario))
+      // Clasificar viajes
+      this.viajesAsignados = this.viajes.filter(
+        (viaje) =>
+          (viaje.estudiante_conductor === rutUsuario || 
+           (viaje.pasajeros && viaje.pasajeros.includes(rutUsuario))) &&
+          viaje.estado_viaje === 'Pendiente'
       );
   
-      console.log('Tiene Viaje:', this.tieneViaje);
-      console.log('Tipo de Usuario:', this.tipoUsuario);
+      this.viajesDisponibles = this.viajes.filter(
+        (viaje) =>
+          viaje.estado_viaje === 'Pendiente' &&
+          viaje.estudiante_conductor !== rutUsuario &&
+          (!viaje.pasajeros || !viaje.pasajeros.includes(rutUsuario))
+      );
+  
+      // Agregar información del conductor a cada viaje
+      await this.cargarImagenesConductores(this.viajes);
+  
+      console.log('Viajes Asignados:', this.viajesAsignados);
+      console.log('Viajes Disponibles:', this.viajesDisponibles);
+  
+      this.tieneViaje = this.viajesAsignados.length > 0;
     } catch (error) {
       console.error('Error al obtener viajes:', error);
+    }
+  }
+
+  async cargarImagenesConductores(viajes: any[]) {
+    for (const viaje of viajes) {
+      if (viaje.estudiante_conductor) {
+        const conductor = await firstValueFrom(this.fireService.getUsuario(viaje.estudiante_conductor));
+        
+        if (conductor && typeof conductor === 'object' && 'imagen_api' in conductor) {
+          viaje.imagen_conductor = conductor['imagen_api'];
+        } else {
+          viaje.imagen_conductor = 'assets/default-avatar.png'; // Imagen predeterminada
+        }
+      }
     }
   }
 

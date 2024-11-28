@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home/perfil"></ion-back-button> <!-- Botón para retroceder -->
+      <ion-back-button defaultHref="/home/perfil"></ion-back-button>
     </ion-buttons>
     <ion-title>Historial</ion-title>
   </ion-toolbar>
@@ -9,29 +9,39 @@
 
 <ion-content class="ion-padding">
 
-  <!-- Si no hay viajes, mostrar una tarjeta con un mensaje -->
-  <ion-card *ngIf="viajes.length === 0">
+  <!-- Selector para alternar entre conductor y pasajero -->
+  <ion-segment [(ngModel)]="model">
+    <ion-segment-button value="conductor">
+      <ion-label>Como Conductor</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="pasajero">
+      <ion-label>Como Pasajero</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+<!-- Lista de viajes como conductor -->
+<div *ngIf="model === 'conductor'">
+  <ion-card *ngIf="viajesConductor.length === 0">
     <ion-card-content>
-      <ion-label>
-        <h2>No hay viajes disponibles en los que estés participando.</h2>
-      </ion-label>
+      <h2>No hay viajes finalizados donde fuiste conductor.</h2>
     </ion-card-content>
   </ion-card>
-
-  <!-- Lista de viajes del historial -->
-  <ion-card *ngFor="let viaje of viajes">
+  <ion-card *ngFor="let viaje of viajesConductor">
     <ion-card-content>
       <ion-item>
         <ion-avatar slot="start">
-          <ion-icon name="person-circle-outline"></ion-icon>
+          <img [src]="viaje.imagen_conductor" alt="Imagen del conductor" />
         </ion-avatar>
         <ion-label>
-          <p><strong>Conductor:</strong> {{viaje.estudiante_conductor === rutUsuario ? 'Tú mismo (Conductor)' : viaje.estudiante_conductor}}</p>
-          <p><strong>Estado:</strong> {{viaje.estado_viaje}}</p>
-          <p><strong>Costo:</strong> {{ viaje.costo | currency:'CLP ':'symbol':'1.0-0' }}</p>
+          <p><strong>Destino:</strong> {{ viaje.nombre_destino }}</p>
+          <p><strong>Estado:</strong> Finalizado</p>
+          <p>
+            <strong>Costo:</strong> 
+            <em>{{ viaje.costo | currency:'CLP ':'symbol':'1.0-0' }}</em> 
+            ({{ viaje.costo_dolar | currency:'USD':'symbol':'1.0-2' }} dólares)
+          </p>
         </ion-label>
       </ion-item>
-
       <ion-grid>
         <ion-row>
           <ion-col>
@@ -56,29 +66,61 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+    </ion-card-content>
+  </ion-card>
+</div>
 
-      <!-- Mostrar la lista de pasajeros solo si el usuario es el conductor -->
-      <ion-grid *ngIf="viaje.estudiante_conductor === rutUsuario">
-        <ion-row>
-          <ion-col>
-            <p><strong>Pasajeros:</strong></p>
-            <ul>
-              <li *ngFor="let pasajero of viaje.pasajeros">{{ pasajero }}</li>
-            </ul>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-
+<!-- Lista de viajes como pasajero -->
+<div *ngIf="model === 'pasajero'">
+  <ion-card *ngIf="viajesPasajero.length === 0">
+    <ion-card-content>
+      <h2>No hay viajes finalizados donde fuiste pasajero.</h2>
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngFor="let viaje of viajesPasajero">
+    <ion-card-content>
+      <ion-item>
+        <ion-avatar slot="start">
+          <img [src]="viaje.imagen_conductor" alt="Imagen del conductor" />
+        </ion-avatar>
+        <ion-label>
+          <p><strong>Conductor:</strong> {{ viaje.estudiante_conductor }}</p>
+          <p><strong>Destino:</strong> {{ viaje.nombre_destino }}</p>
+          <p><strong>Estado:</strong> Finalizado</p>
+          <p>
+            <strong>Costo:</strong> 
+            <em>{{ viaje.costo | currency:'CLP ':'symbol':'1.0-0' }}</em> 
+            ({{ viaje.costo_dolar | currency:'USD':'symbol':'1.0-2' }} dólares)
+          </p>
+        </ion-label>
+      </ion-item>
       <ion-grid>
         <ion-row>
           <ion-col>
-            <p><strong>Razón cancelacion:</strong></p>
-              {{ viaje.razon_cancelacion }}
+            <p><strong>Desde:</strong> DUOC UC: Sede Puente Alto</p>
+          </ion-col>
+          <ion-col>
+            <p><strong>Hasta:</strong> {{ viaje.nombre_destino }}</p>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <p><strong>Capacidad:</strong> {{ viaje.asientos_disponibles }}</p>
+          </ion-col>
+          <ion-col>
+            <p><strong>Forma de pago:</strong> {{ viaje.forma_pago }}</p>
+          </ion-col>
+          <ion-col>
+            <p><strong>Hora de salida:</strong> {{ viaje.hora_salida }}</p>
+          </ion-col>
+          <ion-col>
+            <p><strong>Patente:</strong> {{ viaje.patente }}</p>
           </ion-col>
         </ion-row>
       </ion-grid>
-
     </ion-card-content>
   </ion-card>
+</div>
+
 
 </ion-content>

@@ -9,23 +9,19 @@
   <div *ngIf="tieneViajePendiente" class="viaje-pendiente">
     <ion-card>
       <ion-card-content>
-        Tienes un viaje en progreso
-
-        <!-- Botón para cambiar el estado del viaje -->
-        <ion-button
-          size="small"
-          color="primary"
+        <p>
+          Tienes un viaje 
+          <ion-badge [color]="viajeUsuario?.estado_viaje === 'Pendiente' ? 'warning' : 'success'">
+            {{ viajeUsuario?.estado_viaje }}
+          </ion-badge>
+        </p>
+  
+        <!-- Botón para cambiar el estado del viaje (solo conductor) -->
+        <ion-button 
+          *ngIf="esConductorDelViaje()" 
+          color="primary" 
           (click)="toggleEstadoViaje()">
           {{ botonTexto }}
-        </ion-button>
-
-        <!-- Botón para finalizar el viaje -->
-        <ion-button
-          *ngIf="viajeUsuario?.estado_viaje === 'En progreso'"
-          size="small"
-          color="danger"
-          (click)="finalizarViaje()">
-          Finalizar Viaje
         </ion-button>
       </ion-card-content>
     </ion-card>
@@ -34,3 +30,4 @@
   <!-- Mapa -->
   <div id="map_map"></div>
 </ion-content>
+
