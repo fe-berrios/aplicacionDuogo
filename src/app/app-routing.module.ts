@@ -15,22 +15,27 @@ const routes: Routes = [
   },
   {
     path: 'login',
+    canActivate: [authGuard],
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
   },
   {
     path: 'registro',
+    canActivate: [authGuard],
     loadChildren: () => import('./pages/registro/registro.module').then( m => m.RegistroPageModule)
   },
   {
     path: 'recuperar',
+    canActivate: [authGuard],
     loadChildren: () => import('./pages/recuperar/recuperar.module').then( m => m.RecuperarPageModule)
   },
   {
     path: 'olvido',
+    canActivate: [authGuard],
     loadChildren: () => import('./pages/olvido/olvido.module').then( m => m.OlvidoPageModule)
   },
   {
     path: 'espera',
+    canActivate: [authGuard],
     loadChildren: () => import('./pages/espera/espera.module').then( m => m.EsperaPageModule)
   },
   {
@@ -40,6 +45,7 @@ const routes: Routes = [
   },
   {
     path: 'modificar-viaje',
+    canActivate: [authGuard],
     loadChildren: () => import('./pages/modificar-viaje/modificar-viaje.module').then( m => m.ModificarViajePageModule)
   },
   {

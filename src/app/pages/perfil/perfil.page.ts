@@ -4,6 +4,7 @@ import { UsuarioService } from 'src/app/services/usuario.service';
 import { NavController } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api.service';
 import { FireService } from 'src/app/services/fire.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-perfil',
@@ -108,24 +109,44 @@ export class PerfilPage implements OnInit {
   }
 
   // Guarda los cambios en el perfil
-  guardarCambios() {
+  async guardarCambios() {
     if (this.usuario.valid) {
-      // Obtener el usuario existente del localStorage o del servicio
-      const usuarioSesion = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const usuarioActualizado = { ...this.usuario.getRawValue() }; // Obtén valores del formulario
   
-      // Combinar los cambios con el usuario existente (sin perder atributos no modificados)
-      const usuarioActualizado = { ...usuarioSesion, ...this.usuario.value };
+      if (!usuarioActualizado.rut) {
+        console.error('El RUT del usuario es inválido.');
+        alert('El RUT del usuario es inválido. Verifica los datos.');
+        return;
+      }
   
-      // Guardar el usuario actualizado
-      localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
+      try {
+        // Verifica si el usuario existe en Firebase
+        const docRef = this.fireService.getUsuario(usuarioActualizado.rut);
+        const usuarioExistente = await firstValueFrom(docRef); // Usar correctamente Observable
   
-      this.isEditing = false;
-      this.updateUsuario(usuarioActualizado.rut, usuarioActualizado); // Llama al servicio para actualizar en el servidor
+        if (!usuarioExistente) {
+          console.error('El usuario no existe en la base de datos.');
+          alert('El usuario no existe en la base de datos. Verifica el RUT.');
+          return;
+        }
+  
+        // Actualiza el usuario en Firebase
+        await this.fireService.updateUsuario(usuarioActualizado);
+  
+        // Actualiza el usuario en localStorage
+        localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
+  
+        console.log('Perfil actualizado con éxito');
+        this.isEditing = false; // Salir del modo de edición
+      } catch (error) {
+        console.error('Error al actualizar el perfil:', error);
+        alert('Ocurrió un error al actualizar el perfil. Por favor, intenta nuevamente.');
+      }
     } else {
       console.log('Formulario inválido');
     }
   }
-
+  
   // Actualiza los campos del auto según el tipo de usuario
   toggleAutoFields(tipoUsuario: string) {
     if (tipoUsuario === 'estudiante_conductor') {
@@ -142,11 +163,16 @@ export class PerfilPage implements OnInit {
     this.navController.navigateRoot('/login');
   }
 
-  async updateUsuario(rut: string, nuevoUsuario: any) {
-    if (await this.usuarioService.updateUsuario(rut, nuevoUsuario)) {
+  async updateUsuario(nuevoUsuario: any) {
+    try {
+      // Llama al método de FireService para actualizar el usuario
+      await this.fireService.updateUsuario(nuevoUsuario);
+  
+      // Mostrar mensaje de éxito
       console.log("Usuario modificado con éxito!");
-    } else {
-      console.log("ERROR! Usuario no se pudo modificar.");
+    } catch (error) {
+      // Manejar errores
+      console.error("ERROR! Usuario no se pudo modificar:", error);
     }
   }
 }

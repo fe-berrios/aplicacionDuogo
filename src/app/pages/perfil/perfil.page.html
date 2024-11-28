@@ -53,57 +53,67 @@
       </div>
     </div> <!-- Cierre de flip-card -->
 
-    <br>
-    <br>
-    <br>
-    <br>
-
-    <!-- Botón para modificar perfil -->
-    <ion-button expand="block" *ngIf="!isEditing" (click)="toggleEdit()" style="margin-top: 8px;">MODIFICAR PERFIL</ion-button>
-
-    <!-- Formulario de edición dentro de un card -->
-    <ion-card *ngIf="isEditing">
+    <!-- Tarjeta de Modificar Perfil -->
+    <ion-card *ngIf="isEditing" class="modificar-perfil-card">
       <ion-card-header>
         <ion-card-title>Modificar Perfil</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <form [formGroup]="usuario">
-          <!-- Solo permite editar el teléfono -->
-          <ion-item>
-            <ion-label position="floating">Teléfono</ion-label>
-            <ion-input formControlName="telefono"></ion-input>
-          </ion-item>
-
-          <!-- Permitir modificar tipo de usuario (solo entre 'estudiante' y 'estudiante_conductor') -->
-          <ion-item>
-            <ion-label position="floating">Tipo de Usuario</ion-label>
-            <ion-select formControlName="tipo_usuario">
-              <ion-select-option value="estudiante">Estudiante</ion-select-option>
-              <ion-select-option value="estudiante_conductor">Estudiante Conductor</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <!-- Mostrar y habilitar estos campos solo si el tipo de usuario es 'estudiante_conductor' -->
-          <ion-item *ngIf="usuario.get('tipo_usuario')?.value === 'estudiante_conductor'">
-            <ion-label position="floating">Nombre del Auto</ion-label>
-            <ion-input formControlName="nombre_auto"></ion-input>
-          </ion-item>
-
-          <ion-item *ngIf="usuario.get('tipo_usuario')?.value === 'estudiante_conductor'">
-            <ion-label position="floating">Capacidad del Auto</ion-label>
-            <ion-input formControlName="capacidad_auto"></ion-input>
-          </ion-item>
-
-          <ion-item *ngIf="usuario.get('tipo_usuario')?.value === 'estudiante_conductor'">
-            <ion-label position="floating">Patente</ion-label>
-            <ion-input formControlName="patente"></ion-input>
-          </ion-item>
-
-          <ion-button expand="block" (click)="guardarCambios()">GUARDAR CAMBIOS</ion-button>
-          <ion-button expand="block" color="medium" (click)="cancelEdit()">CANCELAR</ion-button>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="floating">Teléfono</ion-label>
+                  <ion-input formControlName="telefono"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="floating">Tipo de Usuario</ion-label>
+                  <ion-select formControlName="tipo_usuario">
+                    <ion-select-option value="estudiante">Estudiante</ion-select-option>
+                    <ion-select-option value="estudiante_conductor">Estudiante Conductor</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+            <ion-row *ngIf="usuario.get('tipo_usuario')?.value === 'estudiante_conductor'">
+              <ion-col size="12" size-md="4">
+                <ion-item>
+                  <ion-label position="floating">Nombre del Auto</ion-label>
+                  <ion-input formControlName="nombre_auto"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12" size-md="4">
+                <ion-item>
+                  <ion-label position="floating">Capacidad del Auto</ion-label>
+                  <ion-input formControlName="capacidad_auto"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="12" size-md="4">
+                <ion-item>
+                  <ion-label position="floating">Patente</ion-label>
+                  <ion-input formControlName="patente"></ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+            <ion-row class="center-buttons">
+              <ion-col size="auto">
+                <ion-button expand="block" (click)="guardarCambios()">GUARDAR CAMBIOS</ion-button>
+              </ion-col>
+              <ion-col size="auto">
+                <ion-button expand="block" color="medium" (click)="cancelEdit()">CANCELAR</ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </form>
       </ion-card-content>
     </ion-card>
+    
+
+    <!-- Botón para modificar perfil -->
+    <ion-button expand="block" *ngIf="!isEditing" (click)="toggleEdit()">MODIFICAR PERFIL</ion-button>
 
     <!-- Botones generales -->
     <ion-button expand="block" *ngIf="!isEditing" [routerLink]="['/home/historial']">HISTORIAL DE VIAJES</ion-button>

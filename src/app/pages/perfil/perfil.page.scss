@@ -80,3 +80,17 @@
     transform: rotateY(180deg);
     z-index: 1;
   }  
+
+  .profile-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .profile-card {
+    flex: 1;
+    max-width: 48%; /* Para asegurar que ambas tarjetas tengan el mismo ancho */
+  }
+  
