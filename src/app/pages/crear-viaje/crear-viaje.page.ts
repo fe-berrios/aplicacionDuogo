@@ -7,6 +7,7 @@ import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
 import { FireService } from 'src/app/services/fire.service';
 import { ApiService } from 'src/app/services/api.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-crear-viaje',
@@ -30,7 +31,6 @@ export class CrearViajePage implements OnInit {
   dolar: number = 0;
 
   viaje = new FormGroup({
-    id: new FormControl(''),
     estudiante_conductor: new FormControl(''),
     asientos_disponibles: new FormControl('', [Validators.required, Validators.min(1)]),
     nombre_destino: new FormControl(''),
@@ -137,24 +137,13 @@ export class CrearViajePage implements OnInit {
       alert("Debes seleccionar un destino en el mapa antes de crear el viaje.");
       return;
     }
-  
-    const lastId = localStorage.getItem('lastViajeId');
-    let newId = 1;
-  
-    if (lastId) {
-      newId = parseInt(lastId) + 1;
-    }
-  
+
     // Habilitar temporalmente el campo 'patente' para incluirlo en el valor del formulario
     this.viaje.get('patente')?.enable();
   
-    this.viaje.patchValue({
-      id: newId.toString()
-    });
   
     if (await this.fireService.createViaje(this.viaje.value)) {
       console.log("Viaje creado con éxito!");
-      localStorage.setItem('lastViajeId', newId.toString());
   
       // Deshabilitar nuevamente el campo 'patente' si lo deseas
       this.viaje.get('patente')?.disable();

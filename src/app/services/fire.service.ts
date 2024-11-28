@@ -57,15 +57,11 @@ export class FireService {
   }
 
   // Viajes(crud)
-
   async createViaje(viaje: any){
-    const docRef = this.fireStore.collection('viajes').doc(viaje.id);
-    const docActual = await docRef.get().toPromise();
-    if (docActual?.exists){
-      return false;
-    }
+    const docRef = await this.fireStore.collection('viajes').add(viaje);
 
-    await docRef.set(viaje);
+    const id = docRef.id;
+    await docRef.set({...viaje, id});
     return true;
   }
 
