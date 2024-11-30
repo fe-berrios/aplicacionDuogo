@@ -66,6 +66,11 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+
+      <!-- Aquí se agrega la lista de pasajeros -->
+      <ul *ngIf="viaje.pasajeros && viaje.pasajeros.length > 0">
+        <li *ngFor="let pasajero of viaje.pasajeros">{{ pasajero }}</li>
+      </ul>
     </ion-card-content>
   </ion-card>
 </div>

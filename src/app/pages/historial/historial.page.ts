@@ -10,6 +10,7 @@ import { ViajeService } from 'src/app/services/viaje.service';
   styleUrls: ['./historial.page.scss'],
 })
 export class HistorialPage implements OnInit {
+  viajes: any[] = [];
   viajesConductor: any[] = []; // Viajes donde el usuario fue conductor
   viajesPasajero: any[] = []; // Viajes donde el usuario fue pasajero
   rutUsuario: string = '';
