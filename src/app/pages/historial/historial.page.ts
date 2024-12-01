@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { AlertController } from '@ionic/angular'; // Importar AlertController
 import { firstValueFrom } from 'rxjs';
-import { ApiService } from 'src/app/services/api.service';
 import { FireService } from 'src/app/services/fire.service';
-import { ViajeService } from 'src/app/services/viaje.service';
 
 @Component({
   selector: 'app-historial',
@@ -14,9 +13,13 @@ export class HistorialPage implements OnInit {
   viajesConductor: any[] = []; // Viajes donde el usuario fue conductor
   viajesPasajero: any[] = []; // Viajes donde el usuario fue pasajero
   rutUsuario: string = '';
-  model: string = 'conductor';
+  tipoUsuario: string = ''; // Tipo de usuario (conductor o pasajero)
+  model: string = 'conductor'; // Estado inicial para tab "como conductor"
 
-  constructor(private fireService: FireService) {}
+  constructor(
+    private fireService: FireService,
+    private alertController: AlertController // Inyección de AlertController
+  ) {}
 
   ngOnInit() {
     this.getUsuario();
@@ -27,29 +30,39 @@ export class HistorialPage implements OnInit {
   getUsuario() {
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     this.rutUsuario = usuario.rut; // Rescatamos el RUT del usuario logueado
+    this.tipoUsuario = usuario.tipo_usuario || ''; // Rescatamos el tipo de usuario
   }
 
   // Obtener los viajes finalizados donde el usuario participó
   async getViajesUsuario() {
-    const todosLosViajes = await firstValueFrom(this.fireService.getViajes());
+    try {
+      const todosLosViajes = await firstValueFrom(this.fireService.getViajes());
   
-    // Filtrar viajes finalizados
-    const viajesFinalizados = todosLosViajes.filter(viaje => viaje.estado_viaje === 'Finalizado');
+      // Filtrar viajes finalizados
+      const viajesFinalizados = todosLosViajes.filter(viaje => viaje.estado_viaje === 'Finalizado');
   
-    // Clasificar los viajes finalizados según si fue conductor o pasajero
-    this.viajesConductor = viajesFinalizados.filter(
-      viaje => viaje.estudiante_conductor === this.rutUsuario
-    );
+      // Clasificar los viajes finalizados según si fue conductor o pasajero
+      this.viajesConductor = viajesFinalizados.filter(
+        viaje => viaje.estudiante_conductor === this.rutUsuario
+      );
   
-    this.viajesPasajero = viajesFinalizados.filter(
-      viaje => viaje.pasajeros && viaje.pasajeros.includes(this.rutUsuario)
-    );
+      this.viajesPasajero = viajesFinalizados.filter(
+        viaje => viaje.pasajeros && viaje.pasajeros.includes(this.rutUsuario)
+      );
   
-    // Cargar imágenes para los conductores de los viajes
-    await this.cargarImagenesConductores(this.viajesConductor);
-    await this.cargarImagenesConductores(this.viajesPasajero);
+      // Cargar imágenes para los conductores de los viajes
+      await this.cargarImagenesConductores(this.viajesConductor);
+      await this.cargarImagenesConductores(this.viajesPasajero);
+
+      if (this.viajesConductor.length === 0 && this.viajesPasajero.length === 0) {
+        await this.mostrarAlerta('Sin viajes', 'No tienes viajes finalizados como conductor o pasajero.');
+      }
+    } catch (error) {
+      console.error('Error al obtener los viajes:', error);
+      await this.mostrarAlerta('Error', 'Ocurrió un problema al cargar los viajes. Por favor, inténtalo nuevamente.');
+    }
   }
-  
+
   // Función para cargar imágenes de los conductores
   async cargarImagenesConductores(viajes: any[]) {
     for (const viaje of viajes) {
@@ -63,5 +76,15 @@ export class HistorialPage implements OnInit {
         }
       }
     }
+  }
+
+  // Mostrar mensajes al usuario
+  async mostrarAlerta(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['Aceptar'],
+    });
+    await alert.present();
   }
 }

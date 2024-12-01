@@ -6,13 +6,51 @@
 
   <ion-card class="custom-card">
     <form [formGroup]="usuario" (ngSubmit)="registroUsuario()" style="margin: 20px;">
-      <ion-input formControlName="rut" type="text" label="RUT" labelPlacement="stacked" fill="outline" Placeholder="12345678-9" helperText="Sin puntos y con guión."></ion-input>
+      <ion-input 
+        formControlName="rut" 
+        type="text" 
+        label="RUT" 
+        labelPlacement="stacked" 
+        fill="outline" 
+        placeholder="12345678-9" 
+        helperText="Sin puntos y con guión."
+        [class.invalid]="usuario.get('rut')?.invalid && usuario.get('rut')?.touched">
+      </ion-input>
+      <ion-text *ngIf="usuario.get('rut')?.invalid && usuario.get('rut')?.touched" color="danger">
+        RUT inválido. Verifica el formato
+      </ion-text>
       <br>
-      <ion-input formControlName="nombre" type="text" label="Nombre" labelPlacement="stacked" fill="outline" placeholder="Alan" helperText="Solo letras"></ion-input>
-      <br>
-      <ion-input formControlName="apellido" type="text" label="Apellido" labelPlacement="stacked" fill="outline" placeholder="Gajardo" helperText="Solo letras"></ion-input>
 
+      <ion-input 
+        formControlName="nombre" 
+        type="text" 
+        label="Nombre" 
+        labelPlacement="stacked" 
+        fill="outline" 
+        placeholder="Nombre" 
+        helperText="Solo letras"
+        [class.invalid]="usuario.get('nombre')?.invalid && usuario.get('nombre')?.touched">
+      </ion-input>
+      <ion-text *ngIf="usuario.get('nombre')?.invalid && usuario.get('nombre')?.touched" color="danger">
+        Nombre inválido. Solo se permiten letras
+      </ion-text>
       <br>
+
+      <ion-input 
+        formControlName="apellido" 
+        type="text" 
+        label="Apellido" 
+        labelPlacement="stacked" 
+        fill="outline" 
+        placeholder="Apellido" 
+        helperText="Solo letras"
+        [class.invalid]="usuario.get('apellido')?.invalid && usuario.get('apellido')?.touched">
+      </ion-input>
+      <ion-text *ngIf="usuario.get('apellido')?.invalid && usuario.get('apellido')?.touched" color="danger">
+        Apellido inválido. Solo se permiten letras
+      </ion-text>
+      <br>
+
       <ion-list>
         <ion-label>Género</ion-label>
         <ion-radio-group formControlName="genero" (ionChange)="handleChange($event)">
@@ -30,42 +68,99 @@
           </ion-item>
         </ion-radio-group>
       </ion-list>
-      
+      <ion-text *ngIf="usuario.get('genero')?.invalid && usuario.get('genero')?.touched" color="danger">
+        Selecciona un género
+      </ion-text>
       <br>
 
-      
-      <ion-input formControlName="telefono" type="text" label="Teléfono" labelPlacement="stacked" fill="outline" placeholder="912345678" helperText="Debe tener 9 dígitos/solo números"></ion-input>
-      <br>
-      <ion-input formControlName="correo" type="email" label="Correo" labelPlacement="stacked" fill="outline" placeholder="correo@duocuc.cl" helperText="Debe ser el correo institucional de DUOC UC!"></ion-input>
+      <ion-input 
+        formControlName="telefono" 
+        type="text" 
+        label="Teléfono" 
+        labelPlacement="stacked" 
+        fill="outline" 
+        placeholder="912345678" 
+        helperText="Debe tener 9 dígitos/solo números"
+        [class.invalid]="usuario.get('telefono')?.invalid && usuario.get('telefono')?.touched">
+      </ion-input>
+      <ion-text *ngIf="usuario.get('telefono')?.invalid && usuario.get('telefono')?.touched" color="danger">
+        Teléfono inválido. Debe tener 9 dígitos!
+      </ion-text>
       <br>
 
-      <!-- Checkbox para conductor -->
+      <ion-input 
+        formControlName="correo" 
+        type="email" 
+        label="Correo" 
+        labelPlacement="stacked" 
+        fill="outline" 
+        placeholder="correo@duocuc.cl" 
+        helperText="Debe ser el correo institucional de DUOC UC!"
+        [class.invalid]="usuario.get('correo')?.invalid && usuario.get('correo')?.touched">
+      </ion-input>
+      <ion-text *ngIf="usuario.get('correo')?.invalid && usuario.get('correo')?.touched" color="danger">
+        Correo inválido. Debe ser correo &#64;duocuc.cl
+      </ion-text>
+      <br>
+
       <ion-item>
         <ion-checkbox formControlName="esConductor" slot="start"></ion-checkbox>
         <ion-label>Eres conductor?</ion-label>
       </ion-item>
+      <br>
+
+      <ion-input 
+        *ngIf="usuario.get('esConductor')?.value" 
+        formControlName="patente" 
+        type="text" 
+        label="Patente" 
+        labelPlacement="stacked" 
+        fill="outline" 
+        placeholder="AB1234 o ABCD12" 
+        helperText="Formato: AB1234 o ABCD12"
+        [class.invalid]="usuario.get('patente')?.invalid && usuario.get('patente')?.touched">
+      </ion-input>
+      <ion-text *ngIf="usuario.get('patente')?.invalid && usuario.get('patente')?.touched" color="danger">
+        Patente inválida
+      </ion-text>
+      <br>
+
+      <ion-input 
+        formControlName="contrasena" 
+        type="password" 
+        label="Contraseña" 
+        labelPlacement="stacked" 
+        fill="outline" 
+        placeholder="Ejemplo123#" 
+        helperText="Alfanumérica y mínimo un caracter especial"
+        [class.invalid]="usuario.get('contrasena')?.invalid && usuario.get('contrasena')?.touched">
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+      <ion-text *ngIf="usuario.get('contrasena')?.invalid && usuario.get('contrasena')?.touched" color="danger">
+        Contraseña inválida
+      </ion-text>
+      <br>
+
+      <ion-input 
+        formControlName="contrasena_confirmar" 
+        type="password" 
+        label="Confirmar Contraseña" 
+        labelPlacement="stacked" 
+        fill="outline" 
+        placeholder="Ejemplo123#" 
+        helperText="Debe ser igual a la contraseña anterior"
+        [class.invalid]="usuario.get('contrasena_confirmar')?.value !== usuario.get('contrasena')?.value">
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input> 
       
+      <ion-text *ngIf="usuario.get('contrasena_confirmar')?.value !== usuario.get('contrasena')?.value" color="danger">
+        Las contraseñas no coinciden
+      </ion-text>
       <br>
 
-      <!-- Campos adicionales si es conductor -->
-      <ion-input *ngIf="usuario.get('esConductor')?.value" formControlName="patente" type="text" label="Patente" labelPlacement="stacked" fill="outline" placeholder="AB1234 o ABCD12" helperText="Formato: AB1234 o ABCD12"></ion-input>
-    
-      <br>
-      <ion-input *ngIf="usuario.get('esConductor')?.value" formControlName="nombre_auto" type="text" label="Marca de auto" labelPlacement="stacked" fill="outline" helperText="Solo letras"></ion-input>
-      <br>
-      <ion-input *ngIf="usuario.get('esConductor')?.value" formControlName="capacidad_auto" type="number" label="Capacidad de auto" labelPlacement="stacked" fill="outline" helperText="Solo números, mínimo 2 "></ion-input>
-      <br>
-
-      <ion-input formControlName="contrasena" type="password" label="Contraseña" labelPlacement="stacked" fill="outline" placeholder="Ejemplo123#" helperText="Alfanumérica y un caracter">
-        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-      </ion-input>
-      <br>
-      <ion-input formControlName="contrasena_confirmar" type="password" label="Confirmar Contraseña" labelPlacement="stacked" fill="outline" placeholder="Ejemplo123#" helperText="Debe ser igual a la contraseña anterior">
-        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-      </ion-input>
-      <br>
-
-      <ion-button [disabled]="!usuario.valid" color="warning" expand="full" fill="outline" shape="round" type="submit">Registrarse</ion-button>
+      <ion-button [disabled]="!usuario.valid" color="warning" expand="full" fill="outline" shape="round" type="submit">
+        Registrarse
+      </ion-button>
     </form>
   </ion-card>
 

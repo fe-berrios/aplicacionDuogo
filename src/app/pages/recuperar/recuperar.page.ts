@@ -22,13 +22,13 @@ export class RecuperarPage {
   async cambiarContrasena() {
     // Verificar que las contraseñas coincidan
     if (this.nuevaContrasena !== this.confirmarContrasena) {
-      this.mensaje = 'Las contraseñas no coinciden.';
+      this.mensaje = 'Las contraseñas no coinciden';
       return;
     }
 
     // Verificar que haya un correo recuperado
     if (!this.correoRecuperado) {
-      this.mensaje = 'No se ha encontrado un correo para la recuperación.';
+      this.mensaje = 'No se ha encontrado un correo para la recuperación';
       return;
     }
 
@@ -50,11 +50,11 @@ export class RecuperarPage {
           this.router.navigate(['/login']);
         }, 3000);
       } else {
-        this.mensaje = 'No se encontró el usuario con el correo especificado.';
+        this.mensaje = 'No se encontró el usuario con el correo especificado';
       }
     } catch (error) {
       console.error('Error al cambiar la contraseña:', error);
-      this.mensaje = 'Hubo un error al cambiar la contraseña.';
+      this.mensaje = 'Hubo un error al cambiar la contraseña';
     }
   }
 }

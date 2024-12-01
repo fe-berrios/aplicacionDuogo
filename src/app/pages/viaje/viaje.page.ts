@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ViajeService } from 'src/app/services/viaje.service';
+import { AlertController } from '@ionic/angular'; // Importar AlertController
 
 // Import para leaflet
 import * as leaflet from 'leaflet';
@@ -38,13 +39,14 @@ export class ViajePage implements OnInit {
   viajesAsignados: any[] = [];
   viajesDisponibles: any[] = [];
 
-  constructor(private viajeService: ViajeService, private router: Router, private fireService: FireService) {}
+  constructor(private viajeService: ViajeService, private router: Router, private fireService: FireService, private alertController: AlertController) {}
 
   ngOnInit() {
     this.getTipoUsuario();
     this.initMapa();
     this.getViajes();
   }
+
 
   initMapa() {
     setTimeout(() => {
@@ -111,6 +113,15 @@ export class ViajePage implements OnInit {
     return viaje.pasajeros && viaje.pasajeros.includes(this.usuario.rut);
   }
 
+  async mostrarAlerta(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header: header,
+      message: message,
+      buttons: ['Aceptar']
+    });
+    await alert.present();
+  }
+  
   unirme(viaje: any) {
     const rutUsuario = this.usuario.rut;
   
@@ -126,7 +137,7 @@ export class ViajePage implements OnInit {
     );
   
     if (tieneViajeActivo) {
-      console.log('No puedes unirte a este viaje porque ya estás asociado a un viaje activo.');
+      this.mostrarAlerta('Error', 'No puedes unirte a este viaje porque ya estás asociado a un viaje activo');
       return;
     }
   
@@ -139,43 +150,75 @@ export class ViajePage implements OnInit {
     viaje.asientos_disponibles -= 1;
   
     this.fireService.updateViaje(viaje).then(() => {
-      console.log('Te has unido al viaje exitosamente.');
+      this.mostrarAlerta('¡Viaje unido!', 'Te has unido al viaje exitosamente');
+      this.getViajes();
       this.router.navigate(['/home/mapa']);
-    }).catch((error) => {
-      console.log('Error al unirse al viaje:', error);
+    }).catch(() => {
+      this.mostrarAlerta('Error', 'Hubo un problema al unirte al viaje');
     });
   }
 
-  abandonar(viaje: any) {
-    const rutUsuario = this.usuario.rut;
-    const index = viaje.pasajeros.indexOf(rutUsuario);
-
-    if (index > -1) {
-      viaje.pasajeros.splice(index, 1);
-      viaje.asientos_disponibles += 1;
-
-      this.fireService.updateViaje(viaje).then(() => {
-        console.log('Has abandonado el viaje exitosamente.');
-        this.getViajes();
-      }).catch((error) => {
-        console.log('Error al abandonar el viaje:', error);
-      });
-    } else {
-      console.log('No estás asociado a este viaje.');
-    }
+  async abandonar(viaje: any) {
+    const alert = await this.alertController.create({
+      header: 'Confirmación',
+      message: '¿Estás seguro de que deseas abandonar este viaje?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Sí',
+          handler: () => {
+            const rutUsuario = this.usuario.rut;
+            const index = viaje.pasajeros.indexOf(rutUsuario);
+  
+            if (index > -1) {
+              viaje.pasajeros.splice(index, 1);
+              viaje.asientos_disponibles += 1;
+  
+              this.fireService.updateViaje(viaje).then(() => {
+                this.mostrarAlerta('¡Viaje abandonado!', 'Has abandonado el viaje exitosamente :D');
+                this.getViajes();
+              }).catch(() => {
+                this.mostrarAlerta('Error', 'Hubo un problema al abandonar el viaje');
+              });
+            } else {
+              this.mostrarAlerta('Error', 'No estás asociado a este viaje');
+            }
+          },
+        },
+      ],
+    });
+  
+    await alert.present();
   }
+  
 
   modificarViaje(viaje: any) {
     this.router.navigate(['/modificar-viaje'], { queryParams: { id: viaje.id } });
   }
 
   async cancelarViaje(viaje: any) {
-    const confirmar = confirm('¿Estás seguro de que deseas cancelar este viaje?');
-    if (confirmar) {
-      await this.fireService.deleteViaje(viaje.id);
-      console.log('Viaje cancelado exitosamente.');
-      this.getViajes();
-    }
+    const alert = await this.alertController.create({
+      header: 'Confirmación',
+      message: '¿Estás seguro de que deseas cancelar este viaje?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+        },
+        {
+          text: 'Sí',
+          handler: async () => {
+            await this.fireService.deleteViaje(viaje.id);
+            this.mostrarAlerta('Viaje cancelado', 'El viaje ha sido cancelado exitosamente');
+            this.getViajes();
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   async getViajes() {

@@ -7,6 +7,7 @@ import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
 import { FireService } from 'src/app/services/fire.service';
 import { ApiService } from 'src/app/services/api.service';
+import { AlertController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -23,7 +24,7 @@ export class CrearViajePage implements OnInit {
   // Variables que rescatan información del mapa
   latitud: number = 0;
   longitud: number = 0;
-  direccion: string = "";
+  direccion: string = '';
   distanciaMetros: number = 0;
   tiempoSegundos: number = 0;
 
@@ -48,13 +49,16 @@ export class CrearViajePage implements OnInit {
     pasajeros: new FormControl(''),
     costo: new FormControl('', [Validators.required, Validators.min(0)]),
     costo_dolar: new FormControl('', []),
-    patente: new FormControl({value: '', disabled: true}) // Patente no editable
+    patente: new FormControl({ value: '', disabled: true }) // Patente no editable
   });
 
-  constructor(private router: Router, 
-              private viajeService: ViajeService, 
-              private fireService: FireService,
-              private apiService: ApiService) { }
+  constructor(
+    private router: Router,
+    private viajeService: ViajeService,
+    private fireService: FireService,
+    private apiService: ApiService,
+    private alertController: AlertController
+  ) {}
 
   ngOnInit() {
     this.initMapa();
@@ -65,7 +69,7 @@ export class CrearViajePage implements OnInit {
     if (usuarioConductor) {
       const usuario = JSON.parse(usuarioConductor);
 
-      // Se asigna la patente del usuario al viaje
+      // Asignar datos iniciales del conductor al formulario
       this.viaje.patchValue({
         estudiante_conductor: usuario.rut,
         estado_viaje: 'Pendiente',
@@ -78,33 +82,33 @@ export class CrearViajePage implements OnInit {
     setTimeout(() => {
       if (!this.map) {
         this.map = leaflet.map('map_create').setView([-33.59838016321339, -70.57879780298838], 16);
-        
+
         leaflet.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
           maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
+          attribution: '&copy; OpenStreetMap contributors'
         }).addTo(this.map);
-      
+
         this.geocoder = geo.geocoder({
-          placeholder: "Ingrese dirección a buscar",
-          errorMessage: "Dirección NO encontrada"
+          placeholder: 'Ingrese dirección a buscar',
+          errorMessage: 'Dirección no encontrada'
         }).addTo(this.map);
-      
+
         this.geocoder.on('markgeocode', (e) => {
           this.latitud = e.geocode.properties['lat'];
           this.longitud = e.geocode.properties['lon'];
           this.direccion = e.geocode.properties['display_name'];
-      
+
           this.viaje.patchValue({
             latitud: this.latitud.toString(),
             longitud: this.longitud.toString(),
             nombre_destino: this.direccion
           });
-      
+
           if (this.map) {
             if (this.currentRoute) {
-              this.map.removeControl(this.currentRoute);  // Remueve la ruta anterior
+              this.map.removeControl(this.currentRoute); // Remover ruta anterior
             }
-      
+
             this.currentRoute = leaflet.Routing.control({
               waypoints: [
                 leaflet.latLng(-33.59838016321339, -70.57879780298838),
@@ -117,7 +121,7 @@ export class CrearViajePage implements OnInit {
 
               const costo = Math.floor(this.distanciaMetros / 200) * 200;
               const costoDolar = this.dolar > 0 ? (costo / this.dolar).toFixed(2) : '0';
-      
+
               this.viaje.patchValue({
                 distancia_metros: this.distanciaMetros.toString(),
                 tiempo_segundos: this.tiempoSegundos.toString(),
@@ -132,34 +136,65 @@ export class CrearViajePage implements OnInit {
   }
 
   async createViaje() {
-    // Validar si se ha seleccionado una ruta (latitud y longitud)
+    // Validar si el conductor ya tiene un viaje activo
+    const usuarioConductor = localStorage.getItem('usuario');
+    if (usuarioConductor) {
+      const usuario = JSON.parse(usuarioConductor);
+      const viajesActivos = await firstValueFrom(
+        this.fireService.getViajes()
+      );
+      const tieneViajeActivo = viajesActivos.some(
+        viaje =>
+          viaje.estudiante_conductor === usuario.rut &&
+          (viaje.estado_viaje === 'Pendiente' || viaje.estado_viaje === 'En progreso')
+      );
+
+      if (tieneViajeActivo) {
+        await this.mostrarAlerta(
+          'Lo sentimos',
+          'Ya tienes un viaje activo. Debes finalizar o eliminar el viaje actual antes de crear uno nuevo'
+        );
+        return;
+      }
+    }
+
+    // Validar si se ha seleccionado un destino
     if (!this.viaje.value.latitud || !this.viaje.value.longitud) {
-      alert("Debes seleccionar un destino en el mapa antes de crear el viaje.");
+      await this.mostrarAlerta(
+        'Error',
+        'Debes seleccionar un destino en el mapa antes de crear el viaje'
+      );
       return;
     }
 
-    // Habilitar temporalmente el campo 'patente' para incluirlo en el valor del formulario
     this.viaje.get('patente')?.enable();
-  
-  
-    if (await this.fireService.createViaje(this.viaje.value)) {
-      console.log("Viaje creado con éxito!");
-  
-      // Deshabilitar nuevamente el campo 'patente' si lo deseas
+
+    try {
+      await this.fireService.createViaje(this.viaje.value);
+      await this.mostrarAlerta('Felicidades', 'El viaje ha sido creado exitosamente.');
       this.viaje.get('patente')?.disable();
-  
-      // Navegar a la página de viajes y refrescar la página
-      this.router.navigate(['/home/viaje']).then(() => {
-        window.location.reload();
-      });
-    } else {
-      console.log("Error! No se pudo crear el viaje");
+      this.router.navigate(['/home/viaje']);
+    } catch (error) {
+      console.error('Error al crear el viaje:', error);
+      await this.mostrarAlerta(
+        'Error',
+        'Ocurrió un problema al crear el viaje. Por favor, inténtalo de nuevo'
+      );
     }
   }
-  
-  dolarAPI(){
-    this.apiService.getDolar().subscribe((data:any)=>{
+
+  dolarAPI() {
+    this.apiService.getDolar().subscribe((data: any) => {
       this.dolar = data.dolar.valor;
-    })
+    });
+  }
+
+  async mostrarAlerta(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['Aceptar']
+    });
+    await alert.present();
   }
 }
