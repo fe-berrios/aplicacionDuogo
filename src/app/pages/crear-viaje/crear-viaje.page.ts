@@ -51,6 +51,8 @@ export class CrearViajePage implements OnInit {
     costo_dolar: new FormControl('', []),
     patente: new FormControl({ value: '', disabled: true }) // Patente no editable
   });
+  viajeForm: any;
+  usuario: any;
 
   constructor(
     private router: Router,
