@@ -7,6 +7,7 @@ import * as geo from 'leaflet-control-geocoder';
 import 'leaflet-routing-machine';
 import { FireService } from 'src/app/services/fire.service';
 import { firstValueFrom } from 'rxjs';
+import { ApiService } from 'src/app/services/api.service'; // Asegúrate de importar ApiService
 
 @Component({
   selector: 'app-modificar-viaje',
@@ -17,12 +18,13 @@ export class ModificarViajePage implements OnInit {
   private map: leaflet.Map | undefined;
   private geocoder: geo.Geocoder | undefined;
   private currentRoute: any;
-  viajeId: number | undefined;
+  viajeId: string | undefined;
+  dolar: number = 0; // Variable para el valor del dólar
 
   // Variables que rescatan información del mapa
   latitud: number = 0;
   longitud: number = 0;
-  direccion: string = "";
+  direccion: string = '';
   distanciaMetros: number = 0;
   tiempoSegundos: number = 0;
 
@@ -43,33 +45,32 @@ export class ModificarViajePage implements OnInit {
     ]),
     pasajeros: new FormControl(''),
     costo: new FormControl('', [Validators.required, Validators.min(0)]),
-    patente: new FormControl({value: '', disabled: true}) // Patente no editable
+    costo_dolar: new FormControl('', []),
+    patente: new FormControl({ value: '', disabled: true }) // Patente no editable
   });
 
   constructor(
-    private router: Router, 
-    private route: ActivatedRoute, 
+    private router: Router,
+    private route: ActivatedRoute,
     private viajeService: ViajeService,
-    private fireService: FireService
+    private fireService: FireService,
+    private apiService: ApiService // Inyectamos ApiService
   ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.viajeId = params['id'] ? Number(params['id']) : undefined; // Mantén viajeId como number
+      this.viajeId = params['id'] ? String(params['id']) : undefined;
       if (this.viajeId) {
-        this.cargarViaje(this.viajeId.toString()); // Convierte a string al llamar cargarViaje
+        this.cargarViaje(this.viajeId.toString());
       }
     });
     this.initMapa();
+    this.dolarAPI(); // Obtener el valor del dólar
   }
 
-  // Cargar los datos del viaje existente para modificarlos
   async cargarViaje(id: string) {
-    const viajeExistente: any = await firstValueFrom(this.fireService.getViaje(id));
+    const viajeExistente: any = await firstValueFrom(this.fireService.getViaje(this.viajeId || ''));
     if (viajeExistente) {
-      // Habilitar temporalmente el campo 'patente' para que el valor pueda ser asignado
-      this.viaje.get('patente')?.enable();
-  
       this.viaje.patchValue({
         id: viajeExistente.id,
         estudiante_conductor: viajeExistente.estudiante_conductor,
@@ -84,50 +85,48 @@ export class ModificarViajePage implements OnInit {
         hora_salida: viajeExistente.hora_salida,
         pasajeros: viajeExistente.pasajeros,
         costo: viajeExistente.costo,
-        patente: viajeExistente.patente // Aquí cargamos la patente
+        costo_dolar: viajeExistente.costo_dolar,
+        patente: viajeExistente.patente
       });
-  
-      // Deshabilitar nuevamente el campo 'patente' después de asignar el valor
-      this.viaje.get('patente')?.disable();
-  
+
       this.latitud = parseFloat(viajeExistente.latitud);
       this.longitud = parseFloat(viajeExistente.longitud);
-      this.direccion = viajeExistente.nombre_destino;
+      this.distanciaMetros = parseFloat(viajeExistente.distancia_metros);
+      this.calcularCosto(); // Calculamos el costo al cargar el viaje
     }
   }
-  
 
   initMapa() {
     setTimeout(() => {
       if (!this.map) {
         this.map = leaflet.map('map_modificar').setView([this.latitud || -33.59838016321339, this.longitud || -70.57879780298838], 16);
-  
+
         leaflet.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
           maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
+          attribution: '&copy; OpenStreetMap contributors'
         }).addTo(this.map);
-  
+
         this.geocoder = geo.geocoder({
-          placeholder: "Ingrese dirección a buscar",
-          errorMessage: "Dirección NO encontrada"
+          placeholder: 'Ingrese dirección a buscar',
+          errorMessage: 'Dirección no encontrada'
         }).addTo(this.map);
-  
+
         this.geocoder.on('markgeocode', (e) => {
           this.latitud = e.geocode.properties['lat'];
           this.longitud = e.geocode.properties['lon'];
           this.direccion = e.geocode.properties['display_name'];
-  
+
           this.viaje.patchValue({
             latitud: this.latitud.toString(),
             longitud: this.longitud.toString(),
             nombre_destino: this.direccion
           });
-  
+
           if (this.map) {
             if (this.currentRoute) {
-              this.map.removeControl(this.currentRoute);  // Remover la ruta anterior
+              this.map.removeControl(this.currentRoute);
             }
-  
+
             this.currentRoute = leaflet.Routing.control({
               waypoints: [
                 leaflet.latLng(-33.59838016321339, -70.57879780298838),
@@ -137,11 +136,12 @@ export class ModificarViajePage implements OnInit {
             }).on('routesfound', (e) => {
               this.distanciaMetros = e.routes[0].summary.totalDistance;
               this.tiempoSegundos = e.routes[0].summary.totalTime;
-  
+
               this.viaje.patchValue({
                 distancia_metros: this.distanciaMetros.toString(),
                 tiempo_segundos: this.tiempoSegundos.toString()
               });
+              this.calcularCosto(); // Recalcular el costo cuando cambien los valores
             }).addTo(this.map);
           }
         });
@@ -149,14 +149,30 @@ export class ModificarViajePage implements OnInit {
     }, 2000);
   }
 
-  // Método para modificar un viaje existente
+  dolarAPI() {
+    this.apiService.getDolar().subscribe((data: any) => {
+      this.dolar = data.dolar.valor;
+      this.calcularCosto(); // Recalcular el costo cuando se actualice el valor del dólar
+    });
+  }
+
+  calcularCosto() {
+    if (this.distanciaMetros > 0) {
+      const costo = Math.floor(this.distanciaMetros / 200) * 200;
+      const costoDolar = this.dolar > 0 ? (costo / this.dolar).toFixed(2) : '0';
+      this.viaje.patchValue({
+        costo: costo.toString(),
+        costo_dolar: costoDolar
+      });
+    }
+  }
+
   async modificarViaje() {
     if (this.viajeId && this.viaje.valid) {
       const resultado = await this.fireService.updateViaje(this.viaje.value);
-  
+
       if (resultado) {
         console.log('Viaje modificado con éxito');
-        // Navegar a la página de viajes y refrescar la página
         this.router.navigate(['/home/viaje']).then(() => {
           window.location.reload();
         });
