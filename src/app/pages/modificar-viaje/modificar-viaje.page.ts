@@ -8,6 +8,7 @@ import 'leaflet-routing-machine';
 import { FireService } from 'src/app/services/fire.service';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service'; // Asegúrate de importar ApiService
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-modificar-viaje',
@@ -54,7 +55,8 @@ export class ModificarViajePage implements OnInit {
     private route: ActivatedRoute,
     private viajeService: ViajeService,
     private fireService: FireService,
-    private apiService: ApiService // Inyectamos ApiService
+    private apiService: ApiService, // Inyectamos ApiService
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {
@@ -69,30 +71,38 @@ export class ModificarViajePage implements OnInit {
   }
 
   async cargarViaje(id: string) {
-    const viajeExistente: any = await firstValueFrom(this.fireService.getViaje(this.viajeId || ''));
-    if (viajeExistente) {
-      this.viaje.patchValue({
-        id: viajeExistente.id,
-        estudiante_conductor: viajeExistente.estudiante_conductor,
-        asientos_disponibles: viajeExistente.asientos_disponibles,
-        nombre_destino: viajeExistente.nombre_destino,
-        latitud: viajeExistente.latitud,
-        longitud: viajeExistente.longitud,
-        distancia_metros: viajeExistente.distancia_metros,
-        tiempo_segundos: viajeExistente.tiempo_segundos,
-        forma_pago: viajeExistente.forma_pago,
-        estado_viaje: viajeExistente.estado_viaje,
-        hora_salida: viajeExistente.hora_salida,
-        pasajeros: viajeExistente.pasajeros,
-        costo: viajeExistente.costo,
-        costo_dolar: viajeExistente.costo_dolar,
-        patente: viajeExistente.patente
-      });
+    try {
+      const viajeExistente: any = await firstValueFrom(this.fireService.getViaje(this.viajeId || ''));
+      if (viajeExistente) {
+        this.viaje.patchValue({
+          id: viajeExistente.id,
+          estudiante_conductor: viajeExistente.estudiante_conductor,
+          asientos_disponibles: viajeExistente.asientos_disponibles,
+          nombre_destino: viajeExistente.nombre_destino,
+          latitud: viajeExistente.latitud,
+          longitud: viajeExistente.longitud,
+          distancia_metros: viajeExistente.distancia_metros,
+          tiempo_segundos: viajeExistente.tiempo_segundos,
+          forma_pago: viajeExistente.forma_pago,
+          estado_viaje: viajeExistente.estado_viaje,
+          hora_salida: viajeExistente.hora_salida,
+          pasajeros: viajeExistente.pasajeros,
+          costo: viajeExistente.costo,
+          costo_dolar: viajeExistente.costo_dolar,
+          patente: viajeExistente.patente
+        });
 
-      this.latitud = parseFloat(viajeExistente.latitud);
-      this.longitud = parseFloat(viajeExistente.longitud);
-      this.distanciaMetros = parseFloat(viajeExistente.distancia_metros);
-      this.calcularCosto(); // Calculamos el costo al cargar el viaje
+        this.latitud = parseFloat(viajeExistente.latitud);
+        this.longitud = parseFloat(viajeExistente.longitud);
+        this.distanciaMetros = parseFloat(viajeExistente.distancia_metros);
+        this.calcularCosto(); // Calculamos el costo al cargar el viaje
+      } else {
+        await this.mostrarAlerta('Error', 'No se encontró el viaje especificado');
+        this.router.navigate(['/home/viaje']);
+      }
+    } catch (error) {
+      console.error('Error al cargar el viaje:', error);
+      await this.mostrarAlerta('Error', 'Ocurrió un problema al cargar los datos del viaje');
     }
   }
 
@@ -168,17 +178,64 @@ export class ModificarViajePage implements OnInit {
   }
 
   async modificarViaje() {
-    if (this.viajeId && this.viaje.valid) {
-      const resultado = await this.fireService.updateViaje(this.viaje.value);
-
-      if (resultado) {
-        console.log('Viaje modificado con éxito');
-        this.router.navigate(['/home/viaje']).then(() => {
-          window.location.reload();
-        });
-      } else {
-        console.log('Error al modificar el viaje');
-      }
+    if (!this.viajeId || !this.viaje.valid) {
+        await this.mostrarAlerta('Formulario inválido', 'Por favor, completa todos los campos requeridos');
+        return;
     }
+
+    // Verificar si el viaje ya ha comenzado
+    const estadoViaje = this.viaje.get('estado_viaje')?.value;
+    if (estadoViaje === 'En progreso' || estadoViaje === 'Finalizado') {
+        await this.mostrarAlerta(
+            'Modificación no permitida',
+            `No puedes modificar un viaje que está ${estadoViaje.toLowerCase()}.`
+        );
+        return;
+    }
+
+    const alert = await this.alertController.create({
+        header: 'Confirmación',
+        message: '¿Estás seguro de que deseas modificar este viaje?',
+        buttons: [
+            {
+                text: 'Cancelar',
+                role: 'cancel',
+                handler: () => {
+                    console.log('Modificación cancelada por el usuario');
+                }
+            },
+            {
+                text: 'Confirmar',
+                handler: async () => {
+                    try {
+                        const resultado = await this.fireService.updateViaje(this.viaje.value);
+                        if (resultado) {
+                            await this.mostrarAlerta('Felicidades', 'Viaje modificado con éxito');
+                            this.router.navigate(['/home/viaje']).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            await this.mostrarAlerta('Error', 'Hubo un problema al modificar el viaje');
+                        }
+                    } catch (error) {
+                        console.error('Error al modificar el viaje:', error);
+                        await this.mostrarAlerta('Error', 'Ocurrió un error inesperado al modificar el viaje');
+                    }
+                }
+            }
+        ]
+    });
+
+    await alert.present();
+}
+
+
+  async mostrarAlerta(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['Aceptar']
+    });
+    await alert.present();
   }
 }
